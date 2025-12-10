@@ -1,4 +1,4 @@
-import { Session } from "../models/session";
+import { Session } from '../models/session.js';
 
 export const registerUser = async (req, res) => {
   res.status(201).json();
@@ -18,7 +18,7 @@ export const logoutUser = async (req, res) => {
   res.clearCookies('sessionId');
   res.clearCookies('accessToken');
   res.clearCookies('refreshToken');
-  
+
   res.status(204).send();
 };
 
