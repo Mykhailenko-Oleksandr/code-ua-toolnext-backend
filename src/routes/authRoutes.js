@@ -1,6 +1,6 @@
 // import { celebrate } from 'celebrate';
 import { Router } from 'express';
-import { logoutUser } from '../controllers/authController';
+import { logoutUser } from '../controllers/authController.js';
 
 const router = Router();
 
