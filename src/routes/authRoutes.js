@@ -6,7 +6,7 @@ import { logoutUser } from '../controllers/authController.js';
 
 const router = Router();
 
-router.post('/auth/login', celebrate(loginUserSchema), loginUser);
+router.post('/api/auth/login', celebrate(loginUserSchema), loginUser);
 
 router.post('/api/auth/logout', logoutUser);
 
