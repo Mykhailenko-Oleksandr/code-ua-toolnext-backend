@@ -5,7 +5,30 @@ import { Session } from '../models/session.js';
 import { createSession, setSessionCookies } from '../services/auth.js';
 
 export const registerUser = async (req, res) => {
-  res.status(201).json();
+  const { name, email, password } = req.body;
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw createHttpError(409, 'Email already in use');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  const session = await createSession(newUser._id);
+  setSessionCookies(res, session);
+
+  res.status(201).json({
+    id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+    avatarUrl: newUser.avatarUrl,
+  });
 };
 
 export const loginUser = async (req, res) => {
