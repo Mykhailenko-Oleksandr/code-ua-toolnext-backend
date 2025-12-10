@@ -2,8 +2,8 @@
 .DS_Store
 .idea
 
-# txt
-.txt
+#Pull request txt
+pullrequest-list.txt
 
 # env
 .env
