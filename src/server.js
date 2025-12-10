@@ -15,7 +15,7 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 // Routes
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from './routes/usersRoutes.js';
 import toolsRoutes from './routes/toolsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import bookingsRoutes from './routes/bookingsRoutes.js';
