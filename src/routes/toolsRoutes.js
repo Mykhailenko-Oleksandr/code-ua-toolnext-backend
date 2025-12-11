@@ -1,12 +1,17 @@
 import { Router } from 'express';
-import { upload } from '../middleware/multer.js';
-import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
-
-import { deleteTool, getToolById, updateTool } from '../controllers/toolsController.js';
 import { celebrate } from 'celebrate';
-import { toolIdSchema, updateToolSchema } from '../validations/toolsValidation.js';
+import { upload } from '../middleware/multer.js';
 import { authenticate } from '../middleware/authenticate.js';
-
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import {
+  deleteTool,
+  getToolById,
+  updateTool,
+} from '../controllers/toolsController.js';
+import {
+  toolIdSchema,
+  updateToolSchema,
+} from '../validations/toolsValidation.js';
 
 const router = Router();
 
@@ -19,8 +24,12 @@ router.delete(
 );
 
 router.patch(
-  '/api/tools/:toolId', authenticate, upload.single('images'), saveFileToCloudinary, celebrate(updateToolSchema),
-   updateTool
+  '/api/tools/:toolId',
+  authenticate,
+  upload.single('images'),
+  saveFileToCloudinary,
+  celebrate(updateToolSchema),
+  updateTool,
 );
 
 export default router;

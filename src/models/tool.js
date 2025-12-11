@@ -17,6 +17,10 @@ const toolSchema = new Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+    },
     pricePerDay: {
       type: Number,
       required: true,
@@ -32,6 +36,7 @@ const toolSchema = new Schema(
     },
     rentalTerms: {
       type: String,
+      trim: true,
     },
     bookedDates: {
       type: [String],
