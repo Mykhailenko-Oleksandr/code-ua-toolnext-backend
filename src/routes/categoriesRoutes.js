@@ -1,6 +1,8 @@
 import { Router } from 'express';
-// import { celebrate } from 'celebrate';
+import { getAllCategories } from '../controllers/categoriesController.js';
 
 const router = Router();
+
+router.get('/api/categories', getAllCategories);
 
 export default router;
