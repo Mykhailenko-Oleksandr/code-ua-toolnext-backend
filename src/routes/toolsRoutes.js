@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../middlewares/authenticate.js';
 import { getToolById } from '../controllers/toolsController.js';
+import { createToolValidation } from '../validation/toolsValidation.js';
 
 const router = Router();
 

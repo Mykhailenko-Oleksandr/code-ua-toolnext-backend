@@ -21,19 +21,7 @@ export const getToolById = async (req, res, next) => {
 export const createTool = async (req, res, next) => {
   const { title, description, price, category } = req.body;
 
-  if (
-    !title ||
-    !description ||
-    !price ||
-    typeof title !== 'string' ||
-    typeof description !== 'string' ||
-    typeof price !== 'number' ||
-    (category && typeof category !== 'string')
-  ) {
-    return res.status(400).json({ message: 'Invalid data' });
-  }
-
-  const newTool = await Tool.create({
+    const newTool = await Tool.create({
     title,
     description,
     price,
