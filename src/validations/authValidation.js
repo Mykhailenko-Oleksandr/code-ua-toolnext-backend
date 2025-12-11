@@ -1,5 +1,6 @@
 import { Joi, Segments } from 'celebrate';
 
+
 export const registerSchema = {
   [Segments.BODY]: Joi.object({
     name: Joi.string().min(2).max(32).required().messages({
@@ -26,3 +27,4 @@ export const loginUserSchema = {
     password: Joi.string().required(),
   }),
 };
+
