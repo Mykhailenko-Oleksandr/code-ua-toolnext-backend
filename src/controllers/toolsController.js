@@ -1,48 +1,39 @@
 import { Tool } from '../models/tool.js';
+import createHttpError from 'http-errors';
 
-export const updateTool = async (req, res, next) => {
-  try {
+
+export const getToolById = async (req, res) => {
+  const { toolId } = req.params;
+
+  const tool = await Tool.findById(toolId);
+
+  if (!tool) {
+    throw createHttpError(404, 'Tool not found');
+  }
+
+  res.status(200).json(tool);
+};
+
+
+export const updateTool = async (req, res) => {
     const { toolId } = req.params;
-    const updates = req.body;
-    const currentUserId = req.user.id;
 
 
-    if (updates.owner) {
-        return res.status(400).json({
-            message: 'Зміна власника заборонена.'
-        });
-    }
 
     const updatedTool = await Tool.findOneAndUpdate(
-      {
-        _id: toolId,
-        owner: currentUserId
-      },
-      updates,
-      { new: true, runValidators: true }
+        { _id: toolId, userId: req.user._id },
+        req.body,
+        {
+            new: true
+        }
     );
 
-
     if (!updatedTool) {
-
-      const toolExists = await Tool.findById(toolId).select('_id');
-
-      if (!toolExists) {
-
-        return res.status(404).json({ message: 'Інструмент не знайдено.' });
-      } else {
-        return res.status(403).json({
-            message: 'Доступ заборонено. Тільки власник може редагувати інструмент.'
-        });
-      }
+      throw createHttpError(404, 'Інструмент не знайдено.');
     }
 
-    return res.status(200).json({
+    res.status(200).json({
         message: 'Інструмент успішно оновлено.',
         tool: updatedTool
     });
-
-  } catch (err) {
-    next(err);
-  }
 };

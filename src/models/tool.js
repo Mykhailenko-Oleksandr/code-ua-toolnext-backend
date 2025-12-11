@@ -2,55 +2,56 @@ import { Schema, model } from 'mongoose';
 
 const toolSchema = new Schema(
   {
-    name: {
-      type: String,
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      trim: true,
-    },
-    mainImage: {
-      type: String,
-      default: '',
-    },
-    images: {
-      type: [String],
-      default: [],
-    },
-    pricePerDay: {
-      type: Number,
-      required: true,
-    },
-    description: {
-      type: String,
-      default: '',
-      trim: true,
-    },
-    technicalSpecs: {
-      type: String,
-      default: '',
-      trim: true,
-    },
-    rentalConditions: {
-      type: String,
-      default: '',
-      trim: true,
     },
     category: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
       required: true,
     },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    name: {
+      type: String,
       required: true,
+      trim: true,
+    },
+    pricePerDay: {
+      type: Number,
+      required: true,
+    },
+    images: {
+      type: String,
+    },
+    rating: {
+      type: Number,
+    },
+    specifications: {
+      type: Object,
+    },
+    rentalTerms: {
+      type: String,
+    },
+    bookedDates: {
+      type: [String],
+    },
+    feedbacks: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
     },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
-toolSchema.index({ name: 'text', description: 'text' });
+toolSchema.index(
+  { name: 'text', description: 'text' },
+  {
+    name: 'ToolTextIndex',
+    weights: { name: 10, description: 5 },
+  },
+);
 
 export const Tool = model('Tool', toolSchema);

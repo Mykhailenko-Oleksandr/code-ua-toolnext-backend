@@ -2,36 +2,25 @@ import Joi from 'joi';
 import { Segments } from 'celebrate';
 import { isValidObjectId } from 'mongoose';
 
-
 const objectIdValidator = (value, helpers) => {
-  if (!isValidObjectId(value)) {
-    return helpers.error('any.invalid', { message: 'Некоректний формат ID' });
-  }
-  return value;
+  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
 };
 
-
-export const updateToolSchema = {
-
+export const toolIdSchema = {
   [Segments.PARAMS]: Joi.object({
     toolId: Joi.string().custom(objectIdValidator).required(),
   }),
-
+};
+export const updateToolSchema = {
+  ...toolIdSchema,
   [Segments.BODY]: Joi.object({
-    name: Joi.string().min(3).max(100).trim(),
-    mainImage: Joi.string().uri(),
-    images: Joi.array().items(Joi.string().uri()),
+    name: Joi.string().min(3).max(96).trim(),
     pricePerDay: Joi.number().min(0),
-    description: Joi.string().max(1000).trim(),
-    technicalSpecs: Joi.string().max(1000).trim(),
-    rentalConditions: Joi.string().max(500).trim(),
-    category: Joi.string().custom(objectIdValidator),
-
+    categoryId: Joi.string().custom(objectIdValidator),
+    description: Joi.string().min(20).max(2000).trim(),
+    rentalTerms: Joi.string().min(20).max(1000).trim(),
+    specifications: Joi.string().max(1000).trim(),
+    images: Joi.string().uri().required()
   })
-  .min(1)
-  .unknown(false)
-  .messages({
-    'object.min': 'Тіло запиту не може бути порожнім. Надішліть принаймні одне поле для оновлення.',
-    'object.unknown': 'Тіло запиту містить недійсне поле, яке не дозволено змінювати.',
-  }),
+  .min(1),
 };
