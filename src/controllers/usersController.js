@@ -16,10 +16,9 @@ export const getPublicUserById = async (req, res) => {
 
 export const getUserTools = async (req, res) => {
   const { userId } = req.params;
+  const { page = 1, perPage = 8 } = req.query;
 
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 8;
-  const skip = (page - 1) * limit;
+  const skip = (page - 1) * perPage;
 
   const user = await User.findById(userId).select('name avatarUrl');
   if (!user) {
@@ -29,23 +28,22 @@ export const getUserTools = async (req, res) => {
   const tools = await Tool.find({ owner: userId })
     .select('name pricePerDay images rating')
     .skip(skip)
-    .limit(limit)
+    .limit(perPage)
     .sort({ createdAt: -1 });
 
   const totalTools = await Tool.countDocuments({ owner: userId });
 
-  const totalPages = Math.ceil(totalTools / limit);
+  const totalPages = Math.ceil(totalTools / perPage);
   const hasNextPage = page < totalPages;
   const hasPrevPage = page > 1;
 
   res.status(200).json({
     user,
-    countTools: tools.length,
+    page,
+    perPage,
+    totalPages,
     totalTools,
     pagination: {
-      page,
-      limit,
-      totalPages,
       hasNextPage,
       hasPrevPage,
       nextPage: hasNextPage ? page + 1 : null,
