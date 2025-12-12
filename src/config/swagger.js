@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3030',
+        url: 'http://localhost:3000',
         description: 'Development server',
       },
     ],
@@ -46,7 +46,8 @@ const options = {
               type: 'string',
               format: 'uri',
               description: 'User avatar URL',
-              example: 'https://ac.goit.global/fullstack/react/default-avatar.jpg',
+              example:
+                'https://ac.goit.global/fullstack/react/default-avatar.jpg',
             },
             createdAt: {
               type: 'string',
@@ -91,7 +92,7 @@ const options = {
             pricePerDay: {
               type: 'number',
               description: 'Price per day in currency units',
-              example: 50.00,
+              example: 50.0,
             },
             images: {
               type: 'string',
@@ -228,7 +229,7 @@ const options = {
             pricePerDay: {
               type: 'number',
               minimum: 0,
-              example: 75.00,
+              example: 75.0,
             },
             categoryId: {
               type: 'string',
@@ -318,7 +319,8 @@ const options = {
         post: {
           tags: ['Auth'],
           summary: 'Register a new user',
-          description: 'Creates a new user account and returns user data with session cookies',
+          description:
+            'Creates a new user account and returns user data with session cookies',
           requestBody: {
             required: true,
             content: {
@@ -372,7 +374,8 @@ const options = {
         post: {
           tags: ['Auth'],
           summary: 'Login user',
-          description: 'Authenticates user and returns user data with session cookies',
+          description:
+            'Authenticates user and returns user data with session cookies',
           requestBody: {
             required: true,
             content: {
@@ -466,7 +469,8 @@ const options = {
                       avatar: {
                         type: 'string',
                         format: 'uri',
-                        example: 'https://ac.goit.global/fullstack/react/default-avatar.jpg',
+                        example:
+                          'https://ac.goit.global/fullstack/react/default-avatar.jpg',
                       },
                       email: {
                         type: 'string',
@@ -558,7 +562,8 @@ const options = {
                           avatarUrl: {
                             type: 'string',
                             format: 'uri',
-                            example: 'https://ac.goit.global/fullstack/react/default-avatar.jpg',
+                            example:
+                              'https://ac.goit.global/fullstack/react/default-avatar.jpg',
                           },
                         },
                       },
@@ -706,7 +711,8 @@ const options = {
         patch: {
           tags: ['Tools'],
           summary: 'Update tool',
-          description: 'Updates tool information. Requires authentication and ownership.',
+          description:
+            'Updates tool information. Requires authentication and ownership.',
           security: [
             {
               cookieAuth: [],
