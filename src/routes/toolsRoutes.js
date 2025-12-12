@@ -6,6 +6,7 @@ import {
   deleteTool,
   getToolById,
   updateTool,
+  getAllTools,
 } from '../controllers/toolsController.js';
 import {
   toolIdSchema,
@@ -14,6 +15,7 @@ import {
 
 const router = Router();
 
+router.get('/api/tools', getAllTools);
 router.get('/api/tools/:toolId', celebrate(toolIdSchema), getToolById);
 router.delete(
   '/api/tools/:toolId',
