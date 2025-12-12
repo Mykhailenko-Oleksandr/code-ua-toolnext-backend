@@ -4,16 +4,24 @@ import { upload } from '../middleware/multer.js';
 import { authenticate } from '../middleware/authenticate.js';
 import {
   deleteTool,
+  getAllTools,
   getToolById,
   updateTool,
 } from '../controllers/toolsController.js';
 import {
+  getAllToolsSchema,
   toolIdSchema,
   updateToolSchema,
 } from '../validations/toolsValidation.js';
 
 const router = Router();
 
+router.get(
+  '/api/tools',
+  authenticate,
+  celebrate(getAllToolsSchema),
+  getAllTools,
+);
 router.get('/api/tools/:toolId', celebrate(toolIdSchema), getToolById);
 router.delete(
   '/api/tools/:toolId',

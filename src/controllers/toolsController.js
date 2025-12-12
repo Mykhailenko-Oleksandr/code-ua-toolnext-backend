@@ -2,6 +2,31 @@ import { Tool } from '../models/tool.js';
 import createHttpError from 'http-errors';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
+export const getAllTools = async (req, res) => {
+  const { page = 1, perPage = 10, search, category } = req.query;
+  const skip = (page - 1) * perPage;
+  const limit = perPage;
+
+  const toolsQuery = Tool.find();
+
+  if (category) {
+    toolsQuery.where('category').equals(category);
+  }
+
+  if (search) {
+    toolsQuery.where({ $text: { $search: search } });
+  }
+
+  const [totalTools, tools] = await Promise.all([
+    toolsQuery.clone().countDocuments(),
+    toolsQuery.skip(skip).limit(limit),
+  ]);
+
+  const totalPages = Math.ceil(totalTools / perPage);
+
+  res.status(200).json({ page, perPage, totalTools, totalPages, tools });
+};
+
 export const getToolById = async (req, res) => {
   const { toolId } = req.params;
 
@@ -28,9 +53,6 @@ export const deleteTool = async (req, res) => {
   res.status(200).json(tool);
 };
 
-
-
-
 export const updateTool = async (req, res) => {
   const { toolId } = req.params;
   const updateData = { ...req.body };
@@ -47,12 +69,15 @@ export const updateTool = async (req, res) => {
     },
     updateData,
     {
-      new: true
+      new: true,
     },
   );
 
   if (!updatedTool) {
-    throw createHttpError(404, 'Інструмент не знайдено або недостатньо прав доступу.');
+    throw createHttpError(
+      404,
+      'Інструмент не знайдено або недостатньо прав доступу.',
+    );
   }
 
   res.status(200).json({
