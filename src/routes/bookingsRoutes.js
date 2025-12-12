@@ -1,6 +1,16 @@
-import { Router } from 'express';
-// import { celebrate } from 'celebrate';
+import express from 'express';
+import { celebrate } from 'celebrate';
+import {
+  checkAvailability,
+  createBooking,
+  getAllBookings,
+} from '../controllers/bookingController.js';
+import { createBookingSchema } from '../validations/bookingValidations';
 
-const router = Router();
+const router = express.Router();
 
-export default router;
+router.get('/tools/:toolId/availability', checkAvailability);
+
+router.post('/bookings', `auth`, celebrate(createBookingSchema), createBooking);
+
+router.get('/bookings', getAllBookings);
