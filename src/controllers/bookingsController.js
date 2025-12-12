@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
-import { Tool, Booking } from './models.js';
+import { Booking } from '../models/booking.js';
+import { Tool } from '../models/tool.js';
 import { checkAvailabilitySchema } from '../validations/bookingValidations.js';
 
 const datesOverlap = (start1, end1, start2, end2) => {
@@ -18,179 +19,164 @@ const calculateDays = (startDate, endDate) => {
  * GET /tools/:toolId/availability?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
  */
 export const checkAvailability = async (req, res, next) => {
-  try {
-    const { toolId } = req.params;
-    const { startDate, endDate } = req.query;
+  const { toolId } = req.params;
+  const { startDate, endDate } = req.query;
 
-    const { error } = checkAvailabilitySchema.validate({ startDate, endDate });
-    if (error) {
-      return next(createHttpError(400, 'Помилка підтвердження'));
-    }
+  const { error } = checkAvailabilitySchema.validate({ startDate, endDate });
+  if (error) {
+    return next(createHttpError(400, 'Помилка підтвердження'));
+  }
 
-    const tool = await Tool.findById(toolId);
-    if (!tool) {
-      return next(createHttpError(404, 'Інструмент не знайдено'));
-    }
+  const tool = await Tool.findById(toolId);
+  if (!tool) {
+    return next(createHttpError(404, 'Інструмент не знайдено'));
+  }
 
-    const requestedStart = new Date(startDate);
-    const requestedEnd = new Date(endDate);
+  const requestedStart = new Date(startDate);
+  const requestedEnd = new Date(endDate);
 
-    const hasOverlap = tool.bookedDates.some((period) =>
-      datesOverlap(
-        requestedStart,
-        requestedEnd,
-        new Date(period.startDate),
-        new Date(period.endDate),
-      ),
-    );
+  const hasOverlap = tool.bookedDates.some((period) =>
+    datesOverlap(
+      requestedStart,
+      requestedEnd,
+      new Date(period.startDate),
+      new Date(period.endDate),
+    ),
+  );
 
-    if (hasOverlap) {
-      return res.status(200).json({
-        success: true,
-        available: false,
-        message: 'Інструмент недоступний для вибраних дат',
-        bookedPeriods: tool.bookedDates,
-      });
-    }
-
-    const days = calculateDays(requestedStart, requestedEnd);
-    const estimatedPrice = days * tool.pricePerDay;
-
+  if (hasOverlap) {
     return res.status(200).json({
       success: true,
-      available: true,
-      message: 'Інструмент доступний для вибраних дат',
-      toolName: tool.name,
-      pricePerDay: tool.pricePerDay,
-      rentalDays: days,
-      estimatedPrice,
+      available: false,
+      message: 'Інструмент недоступний для вибраних дат',
+      bookedPeriods: tool.bookedDates,
     });
-  } catch (error) {
-    console.error('Помилка перевірки доступності:', error);
-    return next(createHttpError(500, 'Помилка перевірки наявності'));
   }
+
+  const days = calculateDays(requestedStart, requestedEnd);
+  const estimatedPrice = days * tool.pricePerDay;
+
+  return res.status(200).json({
+    success: true,
+    available: true,
+    message: 'Інструмент доступний для вибраних дат',
+    toolName: tool.name,
+    pricePerDay: tool.pricePerDay,
+    rentalDays: days,
+    estimatedPrice,
+  });
 };
 
 export const createBooking = async (req, res, next) => {
-  try {
-    const {
-      toolId,
-      firstName,
-      lastName,
-      phone,
-      startDate,
-      endDate,
-      deliveryCity,
-      novaPoshtaBranch,
-    } = req.body;
+  const {
+    toolId,
+    firstName,
+    lastName,
+    phone,
+    startDate,
+    endDate,
+    deliveryCity,
+    novaPoshtaBranch,
+  } = req.body;
 
-    const userId = req.userId;
+  const userId = req.userId;
 
-    const tool = await Tool.findById(toolId);
-    if (!tool) {
-      return next(createHttpError(404, 'Інструмент не знайдено'));
-    }
-
-    const requestedStart = new Date(startDate);
-    const requestedEnd = new Date(endDate);
-
-    const hasOverlap = tool.bookedDates.some((period) =>
-      datesOverlap(
-        requestedStart,
-        requestedEnd,
-        new Date(period.startDate),
-        new Date(period.endDate),
-      ),
-    );
-
-    if (hasOverlap) {
-      return next(
-        createHttpError(409, 'Інструмент більше не доступний для вибраних дат'),
-      );
-    }
-
-    const days = calculateDays(requestedStart, requestedEnd);
-    const totalPrice = days * tool.pricePerDay;
-
-    if (isNaN(totalPrice) || !isFinite(totalPrice) || totalPrice < 0) {
-      return next(createHttpError(400, 'Недійсний розрахунок загальної ціни'));
-    }
-
-    const booking = new Booking({
-      userId,
-      toolId,
-      firstName,
-      lastName,
-      phone,
-      startDate: requestedStart,
-      endDate: requestedEnd,
-      deliveryCity,
-      novaPoshtaBranch,
-      totalPrice,
-      status: 'pending',
-    });
-
-    await booking.save();
-
-    tool.bookedDates.push({
-      startDate: requestedStart,
-      endDate: requestedEnd,
-    });
-    await tool.save();
-
-    await booking.populate('toolId', 'name pricePerDay');
-
-    return res.status(201).json({
-      success: true,
-      message: 'Успішне бронювання',
-      booked: {
-        id: booking._id,
-        userId: booking.userId,
-        tool: {
-          id: booking.toolId._id,
-          name: booking.toolId.name,
-          pricePerDay: booking.toolId.pricePerDay,
-        },
-        customerInfo: {
-          firstName: booking.firstName,
-          lastName: booking.lastName,
-          phone: booking.phone,
-        },
-        rentalPeriod: {
-          startDate: booking.startDate,
-          endDate: booking.endDate,
-          days,
-        },
-        delivery: {
-          city: booking.deliveryCity,
-          branch: booking.novaPoshtaBranch,
-        },
-        totalPrice: booking.totalPrice,
-        status: booking.status,
-        createdAt: booking.createdAt,
-      },
-    });
-  } catch (error) {
-    console.error('Error in createBooked:', error);
-    return next(createHttpError(500, 'Помилка створення бронювання'));
+  const tool = await Tool.findById(toolId);
+  if (!tool) {
+    return next(createHttpError(404, 'Інструмент не знайдено'));
   }
+
+  const requestedStart = new Date(startDate);
+  const requestedEnd = new Date(endDate);
+
+  const hasOverlap = tool.bookedDates.some((period) =>
+    datesOverlap(
+      requestedStart,
+      requestedEnd,
+      new Date(period.startDate),
+      new Date(period.endDate),
+    ),
+  );
+
+  if (hasOverlap) {
+    return next(
+      createHttpError(409, 'Інструмент більше не доступний для вибраних дат'),
+    );
+  }
+
+  const days = calculateDays(requestedStart, requestedEnd);
+  const totalPrice = days * tool.pricePerDay;
+
+  if (isNaN(totalPrice) || !isFinite(totalPrice) || totalPrice < 0) {
+    return next(createHttpError(400, 'Недійсний розрахунок загальної ціни'));
+  }
+
+  const booking = new Booking({
+    userId,
+    toolId,
+    firstName,
+    lastName,
+    phone,
+    startDate: requestedStart,
+    endDate: requestedEnd,
+    deliveryCity,
+    novaPoshtaBranch,
+    totalPrice,
+    status: 'pending',
+  });
+
+  await booking.save();
+
+  tool.bookedDates.push({
+    startDate: requestedStart,
+    endDate: requestedEnd,
+  });
+  await tool.save();
+
+  await booking.populate('toolId', 'name pricePerDay');
+
+  return res.status(201).json({
+    success: true,
+    message: 'Успішне бронювання',
+    booked: {
+      id: booking._id,
+      userId: booking.userId,
+      tool: {
+        id: booking.toolId._id,
+        name: booking.toolId.name,
+        pricePerDay: booking.toolId.pricePerDay,
+      },
+      customerInfo: {
+        firstName: booking.firstName,
+        lastName: booking.lastName,
+        phone: booking.phone,
+      },
+      rentalPeriod: {
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        days,
+      },
+      delivery: {
+        city: booking.deliveryCity,
+        branch: booking.novaPoshtaBranch,
+      },
+      totalPrice: booking.totalPrice,
+      status: booking.status,
+      createdAt: booking.createdAt,
+    },
+  });
 };
 
-export const getAllBookings = async (req, res, next) => {
-  try {
-    const bookings = await Booking.find()
-      .populate('toolId', 'name pricePerDay')
-      .sort({ createdAt: -1 });
+export const getAllBookings = async (req, res) => {
+  const bookings = await Booking.find()
+    .populate('toolId', 'name pricePerDay')
+    .sort({ createdAt: -1 });
 
-    return res.status(200).json({
-      success: true,
-      count: bookings.length,
-      bookeds: bookings,
-    });
-  } catch (error) {
-    console.error('Error in getAllBooked:', error);
-    return next(createHttpError(500, 'Помилка отримання бронювань'));
-  }
+  return res.status(200).json({
+    success: true,
+    count: bookings.length,
+    books: bookings,
+  });
 };
 
 export const getAllTools = async (req, res, next) => {
