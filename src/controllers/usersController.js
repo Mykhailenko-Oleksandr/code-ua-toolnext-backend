@@ -52,27 +52,19 @@ export const getUserTools = async (req, res) => {
     tools,
   });
 };
-// Вгорі існуючі функції
-
-// Новий код добавлен тут
 
 export const getCurrentUser = async (req, res) => {
-  try {
-    // req.user формується в authMiddleware після перевірки токена
-    const userId = req.user?.id;
+  const userId = req.user?._id;
 
-    if (!userId) {
-      throw createHttpError(401, 'Unauthorized');
-    }
-
-    const user = await User.findById(userId).select('name avatar email');
-
-    if (!user) {
-      throw createHttpError(404, 'User not found');
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message });
+  if (!userId) {
+    throw createHttpError(401, 'Not authorized');
   }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  res.status(200).json(user);
 };
