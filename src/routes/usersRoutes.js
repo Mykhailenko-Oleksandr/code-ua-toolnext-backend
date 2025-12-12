@@ -1,8 +1,19 @@
 import { Router } from 'express';
-import { getPublicUserById } from '../controllers/usersController.js';
+import { celebrate } from 'celebrate';
+
+import {
+  getPublicUserById,
+  getUserTools,
+  getCurrentUser, // нова функція
+} from '../controllers/usersController.js';
+import { userIdSchema } from '../validations/usersValidation.js';
+
+import { authenticate } from '../middleware/authenticate.js'; // твій готовий middleware
 
 const router = Router();
 
-router.get('/api/users/:userId', getPublicUserById);
+router.get('/api/users/me', authenticate, getCurrentUser);
+router.get('/api/users/:userId', celebrate(userIdSchema), getPublicUserById);
+router.get('/api/users/:userId/tools', celebrate(userIdSchema), getUserTools);
 
 export default router;
