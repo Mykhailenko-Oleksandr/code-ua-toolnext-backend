@@ -1,4 +1,3 @@
-
 import { Joi, Segments } from 'celebrate';
 import { isValidObjectId } from 'mongoose';
 
@@ -20,7 +19,15 @@ export const updateToolSchema = {
     categoryId: Joi.string().custom(objectIdValidator),
     description: Joi.object(),
     rentalTerms: Joi.string().min(20).max(1000).trim(),
-    specifications: Joi.string().max(1000).trim()
-  })
+    specifications: Joi.string().max(1000).trim(),
+  }),
 };
 
+export const getToolSchema = {
+  [Segments.QUERY]: Joi.object({
+    page: Joi.number().integer().min(1).default(1),
+    perPage: Joi.number().integer().min(5).max(20).default(8),
+    category: Joi.string().custom(objectIdValidator),
+    search: Joi.string().trim().allow(''),
+  }),
+};

@@ -10,13 +10,13 @@ const categorySchema = new Schema(
       type: String,
     },
     keywords: {
-      type: [String],
-      default: [],
+      type: String,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
 
-const category = model('category', categorySchema);
-
-export default category;
+export const Category = model('Category', categorySchema);
