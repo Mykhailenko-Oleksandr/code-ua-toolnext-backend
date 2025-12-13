@@ -4,11 +4,11 @@ import { celebrate } from 'celebrate';
 import {
   getPublicUserById,
   getUserTools,
-  getCurrentUser, // нова функція
+  getCurrentUser,
 } from '../controllers/usersController.js';
 import { userIdSchema } from '../validations/usersValidation.js';
 
-import { authenticate } from '../middleware/authenticate.js'; // твій готовий middleware
+import { authenticate } from '../middleware/authenticate.js';
 
 const router = Router();
 

@@ -33,6 +33,7 @@ const toolSchema = new Schema(
     },
     specifications: {
       type: Object,
+      default: {},
     },
     rentalTerms: {
       type: String,

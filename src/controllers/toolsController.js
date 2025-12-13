@@ -87,10 +87,7 @@ export const updateTool = async (req, res) => {
     );
   }
 
-  res.status(200).json({
-    message: 'Інструмент успішно оновлено.',
-    tool: updatedTool,
-  });
+  res.status(200).json(updatedTool);
 };
 
 export const createTool = async (req, res, next) => {
