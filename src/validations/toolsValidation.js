@@ -24,7 +24,7 @@ export const updateToolSchema = {
   [Segments.BODY]: Joi.object({
     name: Joi.string().min(3).max(96).trim(),
     pricePerDay: Joi.number().min(0),
-    categoryId: Joi.string().custom(objectIdValidator),
+    category: Joi.string().custom(objectIdValidator),
     rentalTerms: Joi.string().min(20).max(1000).trim(),
     description: Joi.string().min(20).max(2000).trim(),
     specifications: Joi.object(),
@@ -35,10 +35,10 @@ export const createToolSchema = {
   [Segments.BODY]: Joi.object({
     name: Joi.string().min(3).max(96).trim().required(),
     pricePerDay: Joi.number().min(0).required(),
-    categoryId: Joi.string().custom(objectIdValidator).required(),
+    category: Joi.string().custom(objectIdValidator).required(),
     rentalTerms: Joi.string().min(20).max(1000).trim().required(),
     description: Joi.string().min(20).max(2000).trim().required(),
-    specifications: Joi.object(),
+    specifications: Joi.object().default({}),
   }),
 };
 
@@ -50,4 +50,3 @@ export const getToolSchema = {
     search: Joi.string().trim().allow(''),
   }),
 };
-

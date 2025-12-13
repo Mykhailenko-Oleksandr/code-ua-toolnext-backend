@@ -93,17 +93,19 @@ export const updateTool = async (req, res) => {
   });
 };
 
-// ПРИВАТНИЙ — Створення нового оголошення інструменту
 export const createTool = async (req, res, next) => {
-  const { title, description, price, category } = req.body;
+  if (!req.file) {
+    throw createHttpError(400, 'Image is required');
+  }
 
-    const newTool = await Tool.create({
-    title,
-    description,
-    price,
-    category,
+  const createData = { ...req.body };
+
+  const result = await saveFileToCloudinary(req.file.buffer);
+  createData.images = result.secure_url;
+
+  const newTool = await Tool.create({
+    ...createData,
     owner: req.user._id,
-    image: req.file ? req.file.path : null,
   });
 
   res.status(201).json(newTool);
