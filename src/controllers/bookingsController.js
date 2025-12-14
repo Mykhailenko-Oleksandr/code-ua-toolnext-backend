@@ -6,7 +6,6 @@ const datesOverlap = (start1, end1, start2, end2) => {
   return start1 <= end2 && start2 <= end1;
 };
 
-//розрахунок доби
 const calculateDays = (startDate, endDate) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -15,22 +14,18 @@ const calculateDays = (startDate, endDate) => {
   return diffDays === 0 ? 1 : diffDays;
 };
 
-export const checkAvailability = async (req, res, next) => {
+export const checkAvailability = async (req, res) => {
   const { toolId } = req.params;
-
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    return next(createHttpError(404, 'Інструмент не знайдено'));
+    throw createHttpError(404, 'Інструмент не знайдено');
   }
 
   return res.status(200).json({
-    success: true,
     bookedPeriods: tool.bookedDates,
   });
 };
-
-//контроллер для бронювання
 
 export const createBooking = async (req, res, next) => {
   const {

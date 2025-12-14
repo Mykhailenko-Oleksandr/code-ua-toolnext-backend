@@ -1,4 +1,9 @@
 import { Joi, Segments } from 'celebrate';
+import { isValidObjectId } from 'mongoose';
+
+const objectIdValidator = (value, helpers) => {
+  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+};
 
 const requiredInput = `Це поле є обов'язковим`;
 const requiredStartData = `Початкова дата є обов'язковою`;
@@ -72,6 +77,8 @@ export const createBookingSchema = {
   }),
 };
 
-export const checkAvailabilitySchema = Joi.object({
-  toolId: Joi.string().hex().length(24).required(),
-});
+export const checkAvailabilitySchema = {
+  [Segments.PARAMS]: Joi.object({
+    toolId: Joi.string().custom(objectIdValidator).required(),
+  }),
+};
