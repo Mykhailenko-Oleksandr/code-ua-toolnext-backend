@@ -83,7 +83,7 @@ export const updateTool = async (req, res) => {
   if (!updatedTool) {
     throw createHttpError(
       404,
-      'Інструмент не знайдено або недостатньо прав доступу.',
+      'Tool not found or you do not have sufficient access rights',
     );
   }
 

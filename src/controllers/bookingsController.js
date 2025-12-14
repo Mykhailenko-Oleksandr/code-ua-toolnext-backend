@@ -19,7 +19,7 @@ export const checkAvailability = async (req, res) => {
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    throw createHttpError(404, 'Інструмент не знайдено');
+    throw createHttpError(404, 'Tool not found');
   }
 
   return res.status(200).json({
@@ -43,7 +43,7 @@ export const createBooking = async (req, res, next) => {
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    return next(createHttpError(404, 'Інструмент не знайдено'));
+    return next(createHttpError(404, 'Tool not found'));
   }
 
   const requestedStart = new Date(startDate);
@@ -60,7 +60,10 @@ export const createBooking = async (req, res, next) => {
 
   if (hasOverlap) {
     return next(
-      createHttpError(409, 'Інструмент більше не доступний для вибраних дат'),
+      createHttpError(
+        409,
+        'The tool is no longer available for the selected dates',
+      ),
     );
   }
 
@@ -68,7 +71,7 @@ export const createBooking = async (req, res, next) => {
   const totalPrice = days * tool.pricePerDay;
 
   if (isNaN(totalPrice) || !isFinite(totalPrice) || totalPrice < 0) {
-    return next(createHttpError(400, 'Недійсний розрахунок загальної ціни'));
+    return next(createHttpError(400, 'Invalid total price calculation'));
   }
 
   const booking = new Booking({
@@ -97,7 +100,7 @@ export const createBooking = async (req, res, next) => {
 
   return res.status(201).json({
     success: true,
-    message: 'Успішне бронювання',
+    message: 'Successful booking',
     booked: {
       id: booking._id,
       userId: booking.userId,
