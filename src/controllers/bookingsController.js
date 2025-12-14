@@ -5,26 +5,13 @@ import { Tool } from '../models/tool.js';
 const datesOverlap = (start1, end1, start2, end2) => {
   return start1 <= end2 && start2 <= end1;
 };
-
+//розрахунок доби
 const calculateDays = (startDate, endDate) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const diffTime = Math.abs(end - start);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays === 0 ? 1 : diffDays;
-};
-
-export const checkAvailability = async (req, res) => {
-  const { toolId } = req.params;
-
-  const tool = await Tool.findById(toolId);
-  if (!tool) {
-    throw createHttpError(404, 'Tool not found');
-  }
-
-  return res.status(200).json({
-    bookedPeriods: tool.bookedDates,
-  });
 };
 
 export const createBooking = async (req, res, next) => {
@@ -39,11 +26,11 @@ export const createBooking = async (req, res, next) => {
     novaPoshtaBranch,
   } = req.body;
 
-  const userId = req.userId;
+  const userId = req.user._id;
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    return next(createHttpError(404, 'Tool not found'));
+    return next(createHttpError(404, 'Інструмент не знайдено'));
   }
 
   const requestedStart = new Date(startDate);
@@ -60,10 +47,7 @@ export const createBooking = async (req, res, next) => {
 
   if (hasOverlap) {
     return next(
-      createHttpError(
-        409,
-        'The tool is no longer available for the selected dates',
-      ),
+      createHttpError(409, 'Інструмент більше не доступний для вибраних дат'),
     );
   }
 
@@ -71,7 +55,7 @@ export const createBooking = async (req, res, next) => {
   const totalPrice = days * tool.pricePerDay;
 
   if (isNaN(totalPrice) || !isFinite(totalPrice) || totalPrice < 0) {
-    return next(createHttpError(400, 'Invalid total price calculation'));
+    return next(createHttpError(400, 'Недійсний розрахунок загальної ціни'));
   }
 
   const booking = new Booking({
@@ -100,7 +84,7 @@ export const createBooking = async (req, res, next) => {
 
   return res.status(201).json({
     success: true,
-    message: 'Successful booking',
+    message: 'Успішне бронювання',
     booked: {
       id: booking._id,
       userId: booking.userId,
