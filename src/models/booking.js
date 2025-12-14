@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const bookingSchema = new Schema(
   {
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
       index: true,
@@ -65,8 +65,6 @@ const bookingSchema = new Schema(
   },
 );
 
-bookingSchema.index({ createdAt: -1 });
-// bookingSchema.index({ status: 1 });
 bookingSchema.index({ toolId: 1, startDate: 1, endDate: 1 });
 
 export const Booking = model('Booking', bookingSchema);
