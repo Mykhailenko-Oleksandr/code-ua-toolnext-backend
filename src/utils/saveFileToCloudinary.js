@@ -1,7 +1,6 @@
-// Змінений файл: saveFileToCloudinary.js
-
 import { Readable } from 'node:stream';
 import { v2 as cloudinary } from 'cloudinary';
+
 cloudinary.config({
   secure: true,
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,37 +8,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-//  VVV Потребує виправлень
-export async function saveFileToCloudinary(req, res, next) {
-  if (!req.file || !req.file.buffer) {
-    return res
-      .status(400)
-      .json({ message: 'Будь ласка, завантажте зображення' });
-  }
+export async function saveFileToCloudinary(buffer) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'tool-next-app/tools',
+        resource_type: 'image',
+        overwrite: true,
+        unique_filename: true,
+        use_filename: false,
+      },
+      (err, result) => (err ? reject(err) : resolve(result)),
+    );
 
-  const buffer = req.file.buffer;
-  try {
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'tool-next-app/tools',
-          resource_type: 'image',
-          overwrite: true,
-          unique_filename: true,
-          use_filename: false,
-        },
-        (err, result) => (err ? reject(err) : resolve(result)),
-      );
-      Readable.from(buffer).pipe(uploadStream);
-    });
-
-    req.body.images = result.secure_url;
-
-    next();
-  } catch (error) {
-    console.error('Cloudinary Upload Error:', error);
-    return res
-      .status(500)
-      .json({ message: 'Не вдалося завантажити зображення' });
-  }
+    Readable.from(buffer).pipe(uploadStream);
+  });
 }

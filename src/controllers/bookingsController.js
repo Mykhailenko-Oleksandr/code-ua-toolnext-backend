@@ -5,6 +5,7 @@ import { Tool } from '../models/tool.js';
 const datesOverlap = (start1, end1, start2, end2) => {
   return start1 <= end2 && start2 <= end1;
 };
+
 //розрахунок доби
 const calculateDays = (startDate, endDate) => {
   const start = new Date(startDate);
@@ -17,6 +18,7 @@ const calculateDays = (startDate, endDate) => {
 export const checkAvailability = async (req, res, next) => {
   const { toolId } = req.params;
 
+
   const tool = await Tool.findById(toolId);
   if (!tool) {
     return next(createHttpError(404, 'Інструмент не знайдено'));
@@ -27,7 +29,9 @@ export const checkAvailability = async (req, res, next) => {
     bookedPeriods: tool.bookedDates,
   });
 };
+
 //контроллер для бронювання
+
 export const createBooking = async (req, res, next) => {
   const {
     toolId,

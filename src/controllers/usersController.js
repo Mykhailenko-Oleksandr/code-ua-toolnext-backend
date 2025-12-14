@@ -26,7 +26,7 @@ export const getUserTools = async (req, res) => {
   }
 
   const tools = await Tool.find({ owner: userId })
-    .select('name pricePerDay images rating')
+    .select('name pricePerDay images rating specifications')
     .skip(skip)
     .limit(perPage)
     .sort({ createdAt: -1 });
@@ -51,4 +51,20 @@ export const getUserTools = async (req, res) => {
     },
     tools,
   });
+};
+
+export const getCurrentUser = async (req, res) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw createHttpError(401, 'Not authorized');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  res.status(200).json(user);
 };
