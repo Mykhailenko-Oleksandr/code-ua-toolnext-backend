@@ -36,8 +36,10 @@ export const getAllTools = async (req, res) => {
 export const getToolById = async (req, res) => {
   const { toolId } = req.params;
 
-  const tool = await Tool.findById(toolId);
-
+  const tool = await Tool.findById(toolId).populate({
+    path: 'owner',
+    select: 'name avatarUrl email',
+  });
   if (!tool) {
     throw createHttpError(404, 'Tool not found');
   }

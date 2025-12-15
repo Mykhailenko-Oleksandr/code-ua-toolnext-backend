@@ -5,7 +5,7 @@ import { Tool } from '../models/tool.js';
 export const getPublicUserById = async (req, res) => {
   const { userId } = req.params;
 
-  const user = await User.findById(userId).select('name avatar email');
+  const user = await User.findById(userId).select('name avatarURL email');
 
   if (!user) {
     throw createHttpError(404, 'User not found');
