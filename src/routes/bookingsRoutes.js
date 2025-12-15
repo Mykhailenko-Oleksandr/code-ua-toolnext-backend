@@ -13,13 +13,13 @@ import { authenticate } from '../middleware/authenticate.js';
 const router = Router();
 
 router.get(
-  '/tools/:toolId/availability',
+  '/api/tools/:toolId/availability',
   celebrate(checkAvailabilitySchema),
   checkAvailability,
 );
 
 router.post(
-  '/bookings/:toolId',
+  '/api/bookings/:toolId',
   authenticate,
   celebrate(createBookingSchema),
   createBooking,

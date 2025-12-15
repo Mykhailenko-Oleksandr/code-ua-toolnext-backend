@@ -28,18 +28,18 @@ export const checkAvailability = async (req, res) => {
 };
 
 export const createBooking = async (req, res, next) => {
+  const { toolId } = req.params;
   const {
-    toolId,
     firstName,
     lastName,
     phone,
     startDate,
     endDate,
     deliveryCity,
-    novaPoshtaBranch,
+    deliveryBranch,
   } = req.body;
 
-  const userId = req.userId;
+  const userId = req.user._id;
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
@@ -83,7 +83,7 @@ export const createBooking = async (req, res, next) => {
     startDate: requestedStart,
     endDate: requestedEnd,
     deliveryCity,
-    novaPoshtaBranch,
+    deliveryBranch,
     totalPrice,
     status: 'pending',
   });
@@ -121,7 +121,7 @@ export const createBooking = async (req, res, next) => {
       },
       delivery: {
         city: booking.deliveryCity,
-        branch: booking.novaPoshtaBranch,
+        branch: booking.deliveryBranch,
       },
       totalPrice: booking.totalPrice,
       status: booking.status,

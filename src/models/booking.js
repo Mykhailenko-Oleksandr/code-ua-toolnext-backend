@@ -32,11 +32,11 @@ const bookingSchema = new Schema(
       trim: true,
     },
     startDate: {
-      type: Date,
+      type: String,
       required: true,
     },
     endDate: {
-      type: Date,
+      type: String,
       required: true,
     },
     deliveryCity: {
@@ -44,7 +44,7 @@ const bookingSchema = new Schema(
       required: true,
       trim: true,
     },
-    novaPoshtaBranch: {
+    deliveryBranch: {
       type: String,
       required: true,
       trim: true,
