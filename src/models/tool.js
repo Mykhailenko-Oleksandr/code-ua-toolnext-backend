@@ -39,9 +39,12 @@ const toolSchema = new Schema(
       type: String,
       trim: true,
     },
-    bookedDates: {
-      type: [String],
-    },
+    bookedDates: [
+      {
+        startDate: { type: String },
+        endDate: { type: String },
+      },
+    ],
     feedbacks: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
     },

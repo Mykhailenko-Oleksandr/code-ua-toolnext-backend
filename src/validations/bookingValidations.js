@@ -1,5 +1,6 @@
 import { Joi, Segments } from 'celebrate';
 import { isValidObjectId } from 'mongoose';
+import dayjs from 'dayjs';
 
 const objectIdValidator = (value, helpers) => {
   return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
@@ -47,20 +48,47 @@ export const createBookingSchema = {
       'any.required': requiredInput,
     }),
 
-    startDate: Joi.date().iso().min('now').required().messages({
-      'date.min': 'Start date must be in the future',
-      'any.required': requiredStartData,
-      'date.base': 'Invalid start date format',
-    }),
-
-    endDate: Joi.date()
-      .iso()
-      .greater(Joi.ref('startDate'))
+    startDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .custom((value, helpers) => {
+        const today = dayjs().startOf('day');
+        const date = dayjs(value, 'YYYY-MM-DD', true);
+        if (!date.isValid()) {
+          return helpers.error('any.invalid');
+        }
+        if (date.isBefore(today)) {
+          return helpers.error('date.min');
+        }
+        return value;
+      })
       .required()
       .messages({
+        'date.min': 'Start date must be in the future',
+        'any.required': requiredStartData,
+        'date.base': 'Invalid start date format',
+        'string.pattern.base': 'Start date must be in YYYY-MM-DD format',
+      }),
+
+    endDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .custom((value, helpers) => {
+        const { startDate } = helpers.state.ancestors[0];
+        const start = dayjs(startDate, 'YYYY-MM-DD', true);
+        const end = dayjs(value, 'YYYY-MM-DD', true);
+        if (!end.isValid()) {
+          return helpers.error('any.invalid');
+        }
+        if (!end.isAfter(start)) {
+          return helpers.error('date.greater');
+        }
+        return value;
+      })
+      .required()
+      .messages({
+        'any.invalid': 'Invalid end date format',
         'date.greater': 'End date must be after start date',
         'any.required': requiredEndData,
-        'date.base': 'Invalid end date format',
+        'string.pattern.base': 'End date must be in YYYY-MM-DD format',
       }),
 
     deliveryCity: Joi.string().trim().min(2).max(100).required().messages({
@@ -69,7 +97,7 @@ export const createBookingSchema = {
       'any.required': requiredInput,
     }),
 
-    novaPoshtaBranch: Joi.string().trim().min(2).max(200).required().messages({
+    deliveryBranch: Joi.string().trim().min(2).max(200).required().messages({
       'string.min': 'Відділення Нової Пошти має містити принаймні 3 символи',
       'string.max': 'Відділення Нової Пошти не може перевищувати 200 символів',
       'any.required': requiredInput,
