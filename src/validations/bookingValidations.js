@@ -22,14 +22,6 @@ const sanitizePhone = (value, helpers) => {
 
 export const createBookingSchema = {
   [Segments.BODY]: Joi.object({
-    toolId: Joi.string()
-      .required()
-      .pattern(/^[0-9a-fA-F]{24}$/)
-      .messages({
-        'string.pattern.base': 'Invalid Tool ID format',
-        'any.required': 'Tool ID is required',
-      }),
-
     firstName: Joi.string().trim().min(3).max(50).required().messages({
       'string.min': `Ім'я має містити принаймні 3 символи`,
       'string.max': `Ім'я не може перевищувати 20 символів`,
