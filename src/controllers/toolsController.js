@@ -42,7 +42,7 @@ export const getToolById = async (req, res) => {
     select: 'name avatarUrl email',
   });
   if (!tool) {
-    throw createHttpError(404, 'Tool not found');
+    throw createHttpError(404, 'Інструмент не знайдено');
   }
 
   res.status(200).json(tool);
@@ -56,7 +56,7 @@ export const deleteTool = async (req, res) => {
   });
 
   if (!tool) {
-    throw createHttpError(404, 'Tool not found');
+    throw createHttpError(404, 'Інструмент не знайдено');
   }
 
   res.status(200).json(tool);
@@ -85,7 +85,7 @@ export const updateTool = async (req, res) => {
   if (!updatedTool) {
     throw createHttpError(
       404,
-      'Tool not found or you do not have sufficient access rights',
+      'Інструмент не знайдено або у вас немає достатніх прав доступу',
     );
   }
 
@@ -94,7 +94,7 @@ export const updateTool = async (req, res) => {
 
 export const createTool = async (req, res, next) => {
   if (!req.file) {
-    throw createHttpError(400, 'Image is required');
+    throw createHttpError(400, 'Зображення є обов\'язковим');
   }
 
   const createData = { ...req.body };

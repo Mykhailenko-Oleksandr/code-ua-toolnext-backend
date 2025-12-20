@@ -8,7 +8,7 @@ export const getPublicUserById = async (req, res) => {
   const user = await User.findById(userId).select('name avatarURL email');
 
   if (!user) {
-    throw createHttpError(404, 'User not found');
+    throw createHttpError(404, 'Користувача не знайдено');
   }
 
   res.status(200).json(user);
@@ -22,7 +22,7 @@ export const getUserTools = async (req, res) => {
 
   const user = await User.findById(userId).select('name avatarUrl');
   if (!user) {
-    throw createHttpError(404, 'User not found');
+    throw createHttpError(404, 'Користувача не знайдено');
   }
 
   const tools = await Tool.find({ owner: userId })
@@ -57,13 +57,13 @@ export const getCurrentUser = async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) {
-    throw createHttpError(401, 'Not authorized');
+    throw createHttpError(401, 'Не авторизовано');
   }
 
   const user = await User.findById(userId);
 
   if (!user) {
-    throw createHttpError(404, 'User not found');
+    throw createHttpError(404, 'Користувача не знайдено');
   }
 
   res.status(200).json(user);
