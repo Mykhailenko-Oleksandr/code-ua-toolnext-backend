@@ -1,3 +1,5 @@
+// backend/controllers/usersController.js
+
 import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { Tool } from '../models/tool.js';
@@ -16,7 +18,9 @@ export const getPublicUserById = async (req, res) => {
 
 export const getUserTools = async (req, res) => {
   const { userId } = req.params;
-  const { page = 1, perPage = 8 } = req.query;
+  
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const perPage = Math.max(1, Number(req.query.perPage) || 8);
 
   const skip = (page - 1) * perPage;
 
