@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import { Booking } from "../models/booking.js";
 import { Tool } from "../models/tool.js";
+import dayjs from "dayjs";
 
 const datesOverlap = (start1, end1, start2, end2) => {
   return start1 <= end2 && start2 <= end1;
@@ -78,8 +79,8 @@ export const createBooking = async (req, res) => {
     firstName,
     lastName,
     phone,
-    startDate: requestedStart,
-    endDate: requestedEnd,
+    startDate: dayjs(requestedStart).format("YYYY-MM-DD"),
+    endDate: dayjs(requestedEnd).format("YYYY-MM-DD"),
     deliveryCity,
     deliveryBranch,
     totalPrice,
@@ -89,8 +90,8 @@ export const createBooking = async (req, res) => {
   await booking.save();
 
   tool.bookedDates.push({
-    startDate: requestedStart,
-    endDate: requestedEnd,
+    startDate: dayjs(requestedStart).format("YYYY-MM-DD"),
+    endDate: dayjs(requestedEnd).format("YYYY-MM-DD"),
   });
   await tool.save();
 
