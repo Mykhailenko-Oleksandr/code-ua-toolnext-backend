@@ -83,14 +83,13 @@ export const createBookingSchema = {
         'string.pattern.base': 'End date must be in YYYY-MM-DD format',
       }),
 
-    deliveryCity: Joi.string().trim().min(2).max(100).required().messages({
+    deliveryCity: Joi.string().trim().min(3).max(100).required().messages({
       'string.min': 'Місто доставки має містити принаймні 3 символи',
       'string.max': 'Місто доставки не може перевищувати 100 символів',
       'any.required': requiredInput,
     }),
 
-    deliveryBranch: Joi.string().trim().min(2).max(200).required().messages({
-      'string.min': 'Відділення Нової Пошти має містити принаймні 3 символи',
+    deliveryBranch: Joi.string().trim().max(200).required().messages({
       'string.max': 'Відділення Нової Пошти не може перевищувати 200 символів',
       'any.required': requiredInput,
     }),
