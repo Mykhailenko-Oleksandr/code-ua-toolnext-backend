@@ -16,7 +16,7 @@ const objectIdValidator = (value, helpers) => {
 export const toolIdSchema = {
   [Segments.PARAMS]: Joi.object({
     toolId: Joi.string().custom(objectIdValidator).required().messages({
-      'any.required': 'ID інструменту є обов\'язковим',
+      'any.required': "ID інструменту є обов'язковим",
     }),
   }),
 };
@@ -29,7 +29,7 @@ export const updateToolSchema = {
       'string.max': 'Назва не може перевищувати 96 символів',
     }),
     pricePerDay: Joi.number().min(0).messages({
-      'number.min': 'Ціна не може бути від\'ємною',
+      'number.min': "Ціна не може бути від'ємною",
       'number.base': 'Ціна має бути числом',
     }),
     category: Joi.string().custom(objectIdValidator).messages({
@@ -44,12 +44,12 @@ export const updateToolSchema = {
       'string.max': 'Опис не може перевищувати 2000 символів',
     }),
     specifications: Joi.object().messages({
-      'object.base': 'Характеристики мають бути об\'єктом',
+      'object.base': "Характеристики мають бути об'єктом",
     }),
   }),
 };
 
-const requiredField = 'Це поле є обов\'язковим';
+const requiredField = "Це поле є обов'язковим";
 
 export const createToolSchema = {
   [Segments.BODY]: Joi.object({
@@ -60,7 +60,7 @@ export const createToolSchema = {
       'string.empty': requiredField,
     }),
     pricePerDay: Joi.number().min(0).required().messages({
-      'number.min': 'Ціна не може бути від\'ємною',
+      'number.min': "Ціна не може бути від'ємною",
       'number.base': 'Ціна має бути числом',
       'any.required': requiredField,
     }),
