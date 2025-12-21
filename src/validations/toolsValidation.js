@@ -27,7 +27,7 @@ export const updateToolSchema = {
     category: Joi.string().custom(objectIdValidator),
     rentalTerms: Joi.string().min(20).max(1000).trim(),
     description: Joi.string().min(20).max(2000).trim(),
-    specifications: Joi.object(),
+    specifications: Joi.string(),
   }),
 };
 
@@ -38,7 +38,7 @@ export const createToolSchema = {
     category: Joi.string().custom(objectIdValidator).required(),
     rentalTerms: Joi.string().min(20).max(1000).trim().required(),
     description: Joi.string().min(20).max(2000).trim().required(),
-    specifications: Joi.object().default({}),
+    specifications: Joi.string(),
   }),
 };
 

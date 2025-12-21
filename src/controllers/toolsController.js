@@ -71,6 +71,14 @@ export const updateTool = async (req, res) => {
     updateData.images = result.secure_url;
   }
 
+  if (req.body.specifications) {
+    try {
+      req.body.specifications = JSON.parse(req.body.specifications);
+    } catch {
+      throw createHttpError(400, 'Не вірний формат характеристик');
+    }
+  }
+
   const updatedTool = await Tool.findOneAndUpdate(
     {
       _id: toolId,
@@ -95,6 +103,14 @@ export const updateTool = async (req, res) => {
 export const createTool = async (req, res, next) => {
   if (!req.file) {
     throw createHttpError(400, 'Image is required');
+  }
+
+  if (req.body.specifications) {
+    try {
+      req.body.specifications = JSON.parse(req.body.specifications);
+    } catch {
+      throw createHttpError(400, 'Не вірний формат характеристик');
+    }
   }
 
   const createData = { ...req.body };
