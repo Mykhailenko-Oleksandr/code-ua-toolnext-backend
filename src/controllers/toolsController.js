@@ -94,7 +94,7 @@ export const updateTool = async (req, res) => {
 
 export const createTool = async (req, res, next) => {
   if (!req.file) {
-    throw createHttpError(400, 'Зображення є обов\'язковим');
+    throw createHttpError(400, "Зображення є обов'язковим");
   }
 
   const createData = { ...req.body };
