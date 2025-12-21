@@ -9,7 +9,7 @@ export const registerUser = async (req, res) => {
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw createHttpError(409, 'Email already in use');
+    throw createHttpError(409, 'Ця адреса електронної пошти вже використовується');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,13 +32,13 @@ export const loginUser = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw createHttpError(401, 'Invalid credentials');
+    throw createHttpError(401, 'Невірні облікові дані');
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password);
 
   if (!isValidPassword) {
-    throw createHttpError(401, 'Invalid credentials');
+    throw createHttpError(401, 'Невірні облікові дані');
   }
 
   await Session.deleteOne({ userId: user._id });
@@ -71,14 +71,14 @@ export const refreshUserSession = async (req, res) => {
   });
 
   if (!session) {
-    throw createHttpError(401, 'Session not found');
+    throw createHttpError(401, 'Сесію не знайдено');
   }
 
   const isSessionTokenExpired =
     new Date() > new Date(session.refreshTokenValidUntil);
 
   if (isSessionTokenExpired) {
-    throw createHttpError(401, 'Session token expired');
+    throw createHttpError(401, 'Токен сесії застарів');
   }
 
   await Session.deleteOne({
@@ -89,5 +89,5 @@ export const refreshUserSession = async (req, res) => {
   const newSession = await createSession(session.userId);
   setSessionCookies(res, newSession);
 
-  res.status(200).json({ message: 'Session refreshed' });
+  res.status(200).json({ message: 'Сесію оновлено' });
 };

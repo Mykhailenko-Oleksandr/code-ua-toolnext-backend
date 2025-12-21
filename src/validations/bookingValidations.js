@@ -3,7 +3,7 @@ import { isValidObjectId } from 'mongoose';
 import dayjs from 'dayjs';
 
 const objectIdValidator = (value, helpers) => {
-  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+  return !isValidObjectId(value) ? helpers.message('Невірний формат ID') : value;
 };
 
 const requiredInput = `Це поле є обов'язковим`;
@@ -24,13 +24,13 @@ export const createBookingSchema = {
   [Segments.BODY]: Joi.object({
     firstName: Joi.string().trim().min(3).max(50).required().messages({
       'string.min': `Ім'я має містити принаймні 3 символи`,
-      'string.max': `Ім'я не може перевищувати 20 символів`,
+      'string.max': `Ім'я не може перевищувати 50 символів`,
       'any.required': requiredInput,
     }),
 
     lastName: Joi.string().trim().min(2).max(50).required().messages({
-      'string.min': 'Прізвище має містити принаймні 3 символи',
-      'string.max': 'Прізвище не може перевищувати 30 символів',
+      'string.min': 'Прізвище має містити принаймні 2 символи',
+      'string.max': 'Прізвище не може перевищувати 50 символів',
       'any.required': requiredInput,
     }),
 
@@ -55,10 +55,11 @@ export const createBookingSchema = {
       })
       .required()
       .messages({
-        'date.min': 'Start date must be in the future',
+        'date.min': 'Початкова дата не може бути в минулому',
         'any.required': requiredStartData,
-        'date.base': 'Invalid start date format',
-        'string.pattern.base': 'Start date must be in YYYY-MM-DD format',
+        'any.invalid': 'Невірний формат початкової дати',
+        'date.base': 'Невірний формат початкової дати',
+        'string.pattern.base': 'Початкова дата має бути у форматі YYYY-MM-DD',
       }),
 
     endDate: Joi.string()
@@ -77,14 +78,14 @@ export const createBookingSchema = {
       })
       .required()
       .messages({
-        'any.invalid': 'Invalid end date format',
-        'date.greater': 'End date must be after start date',
+        'any.invalid': 'Невірний формат кінцевої дати',
+        'date.greater': 'Кінцева дата має бути після початкової дати',
         'any.required': requiredEndData,
-        'string.pattern.base': 'End date must be in YYYY-MM-DD format',
+        'string.pattern.base': 'Кінцева дата має бути у форматі YYYY-MM-DD',
       }),
 
-    deliveryCity: Joi.string().trim().min(3).max(100).required().messages({
-      'string.min': 'Місто доставки має містити принаймні 3 символи',
+    deliveryCity: Joi.string().trim().min(2).max(100).required().messages({
+      'string.min': 'Місто доставки має містити принаймні 2 символи',
       'string.max': 'Місто доставки не може перевищувати 100 символів',
       'any.required': requiredInput,
     }),
@@ -98,6 +99,8 @@ export const createBookingSchema = {
 
 export const checkAvailabilitySchema = {
   [Segments.PARAMS]: Joi.object({
-    toolId: Joi.string().custom(objectIdValidator).required(),
+    toolId: Joi.string().custom(objectIdValidator).required().messages({
+      'any.required': 'ID інструменту є обов\'язковим',
+    }),
   }),
 };
