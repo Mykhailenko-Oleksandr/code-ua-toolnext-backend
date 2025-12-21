@@ -64,6 +64,15 @@ export const deleteTool = async (req, res) => {
 
 export const updateTool = async (req, res) => {
   const { toolId } = req.params;
+
+    if (req.body.specifications) {
+    try {
+      req.body.specifications = JSON.parse(req.body.specifications);
+    } catch {
+      throw createHttpError(400, 'Не вірний формат характеристик');
+    }
+  }
+  
   const updateData = { ...req.body };
 
   if (req.file) {
@@ -71,13 +80,7 @@ export const updateTool = async (req, res) => {
     updateData.images = result.secure_url;
   }
 
-  if (req.body.specifications) {
-    try {
-      req.body.specifications = JSON.parse(req.body.specifications);
-    } catch {
-      throw createHttpError(400, 'Не вірний формат характеристик');
-    }
-  }
+
 
   const updatedTool = await Tool.findOneAndUpdate(
     {
