@@ -43,8 +43,8 @@ export const updateToolSchema = {
       'string.min': 'Опис має містити принаймні 20 символів',
       'string.max': 'Опис не може перевищувати 2000 символів',
     }),
-    specifications: Joi.object().messages({
-      'object.base': "Характеристики мають бути об'єктом",
+    specifications: Joi.string().messages({
+      'object.base': "Характеристики мають бути рядком",
     }),
   }),
 };
@@ -81,9 +81,9 @@ export const createToolSchema = {
       'any.required': requiredField,
       'string.empty': requiredField,
     }),
-    specifications: Joi.object().default({}).messages({
-      'object.base': 'Характеристики мають бути об\'єктом',
-    }),
+    specifications: Joi.string().messages({
+      'object.base': 'Характеристики мають бути рядком',
+    }),  
   }),
 };
 
