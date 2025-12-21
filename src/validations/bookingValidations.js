@@ -90,8 +90,7 @@ export const createBookingSchema = {
       'any.required': requiredInput,
     }),
 
-    deliveryBranch: Joi.string().trim().min(2).max(200).required().messages({
-      'string.min': 'Відділення Нової Пошти має містити принаймні 2 символи',
+    deliveryBranch: Joi.string().trim().max(200).required().messages({
       'string.max': 'Відділення Нової Пошти не може перевищувати 200 символів',
       'any.required': requiredInput,
     }),
