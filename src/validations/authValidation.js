@@ -1,13 +1,13 @@
 import { Joi, Segments } from 'celebrate';
 
-const requiredField = 'Це поле є обов\'язковим';
+const requiredField = "Це поле є обов'язковим";
 
 export const registerSchema = {
   [Segments.BODY]: Joi.object({
     name: Joi.string().min(2).max(32).required().messages({
       'string.empty': requiredField,
-      'string.min': 'Ім\'я має містити принаймні 2 символи',
-      'string.max': 'Ім\'я не може перевищувати 32 символи',
+      'string.min': "Ім'я має містити принаймні 2 символи",
+      'string.max': "Ім'я не може перевищувати 32 символи",
       'any.required': requiredField,
     }),
     email: Joi.string().email().max(64).required().messages({
