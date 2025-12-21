@@ -6,7 +6,10 @@ import {
   getUserTools,
   getCurrentUser,
 } from '../controllers/usersController.js';
-import { userIdSchema } from '../validations/usersValidation.js';
+import {
+  userIdSchema,
+  userToolsSchema,
+} from '../validations/usersValidation.js';
 
 import { authenticate } from '../middleware/authenticate.js';
 
@@ -14,6 +17,10 @@ const router = Router();
 
 router.get('/api/users/me', authenticate, getCurrentUser);
 router.get('/api/users/:userId', celebrate(userIdSchema), getPublicUserById);
-router.get('/api/users/:userId/tools', celebrate(userIdSchema), getUserTools);
+router.get(
+  '/api/users/:userId/tools',
+  celebrate(userToolsSchema),
+  getUserTools,
+);
 
 export default router;
