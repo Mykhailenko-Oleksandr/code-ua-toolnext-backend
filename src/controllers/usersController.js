@@ -1,14 +1,14 @@
-import createHttpError from 'http-errors';
-import { User } from '../models/user.js';
-import { Tool } from '../models/tool.js';
+import createHttpError from "http-errors";
+import { User } from "../models/user.js";
+import { Tool } from "../models/tool.js";
 
 export const getPublicUserById = async (req, res) => {
   const { userId } = req.params;
 
-  const user = await User.findById(userId).select('name avatarURL email');
+  const user = await User.findById(userId).select("name avatarUrl email");
 
   if (!user) {
-    throw createHttpError(404, 'Користувача не знайдено');
+    throw createHttpError(404, "Користувача не знайдено");
   }
 
   res.status(200).json(user);
@@ -20,13 +20,13 @@ export const getUserTools = async (req, res) => {
 
   const skip = (page - 1) * perPage;
 
-  const user = await User.findById(userId).select('name avatarUrl');
+  const user = await User.findById(userId).select("name avatarUrl");
   if (!user) {
-    throw createHttpError(404, 'Користувача не знайдено');
+    throw createHttpError(404, "Користувача не знайдено");
   }
 
   const tools = await Tool.find({ owner: userId })
-    .select('name pricePerDay images rating specifications')
+    .select("name pricePerDay images rating specifications")
     .skip(skip)
     .limit(perPage)
     .sort({ createdAt: -1 });
@@ -57,13 +57,13 @@ export const getCurrentUser = async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) {
-    throw createHttpError(401, 'Не авторизовано');
+    throw createHttpError(401, "Не авторизовано");
   }
 
   const user = await User.findById(userId);
 
   if (!user) {
-    throw createHttpError(404, 'Користувача не знайдено');
+    throw createHttpError(404, "Користувача не знайдено");
   }
 
   res.status(200).json(user);

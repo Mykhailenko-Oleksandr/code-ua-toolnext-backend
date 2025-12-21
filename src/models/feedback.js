@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 const feedbackSchema = new Schema(
   {
     name: {
@@ -24,4 +24,4 @@ const feedbackSchema = new Schema(
   },
 );
 
-export const Feedback = model('Feedback', feedbackSchema);
+export const Feedback = model("Feedback", feedbackSchema);

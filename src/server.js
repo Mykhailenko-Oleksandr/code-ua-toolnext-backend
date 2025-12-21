@@ -1,30 +1,30 @@
 // Libraries
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import { errors } from 'celebrate';
-import cookieParser from 'cookie-parser';
-import swaggerUi from 'swagger-ui-express';
-import 'dotenv/config';
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import { errors } from "celebrate";
+import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import "dotenv/config";
 
 //MongoDB
-import { connectMongoDB } from './db/connectMongoDB.js';
+import { connectMongoDB } from "./db/connectMongoDB.js";
 
 // Middlewares
-import { logger } from './middleware/logger.js';
-import { notFoundHandler } from './middleware/notFoundHandler.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import { logger } from "./middleware/logger.js";
+import { notFoundHandler } from "./middleware/notFoundHandler.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Swagger
-import { swaggerSpec } from './config/swagger.js';
+import { swaggerSpec } from "./config/swagger.js";
 
 // Routes
-import userRoutes from './routes/usersRoutes.js';
-import toolsRoutes from './routes/toolsRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import bookingsRoutes from './routes/bookingsRoutes.js';
-import categoriesRoutes from './routes/categoriesRoutes.js';
-import feedbacksRoutes from './routes/feedbacksRoutes.js';
+import userRoutes from "./routes/usersRoutes.js";
+import toolsRoutes from "./routes/toolsRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import bookingsRoutes from "./routes/bookingsRoutes.js";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
+import feedbacksRoutes from "./routes/feedbacksRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 3030;
@@ -36,7 +36,7 @@ app.use(cookieParser());
 app.use(helmet());
 
 // Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(userRoutes);
 app.use(toolsRoutes);

@@ -1,6 +1,6 @@
-import { Tool } from '../models/tool.js';
-import createHttpError from 'http-errors';
-import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { Tool } from "../models/tool.js";
+import createHttpError from "http-errors";
+import { saveFileToCloudinary } from "../utils/saveFileToCloudinary.js";
 
 export const getAllTools = async (req, res) => {
   const { page = 1, perPage = 8, category, search } = req.query;
@@ -14,8 +14,8 @@ export const getAllTools = async (req, res) => {
   }
 
   if (category) {
-    const categories = category.split(',');
-    toolsQuery.where('category').in(categories);
+    const categories = category.split(",");
+    toolsQuery.where("category").in(categories);
   }
 
   const [totalTools, tools] = await Promise.all([
@@ -38,11 +38,11 @@ export const getToolById = async (req, res) => {
   const { toolId } = req.params;
 
   const tool = await Tool.findById(toolId).populate({
-    path: 'owner',
-    select: 'name avatarUrl email',
+    path: "owner",
+    select: "name avatarUrl email",
   });
   if (!tool) {
-    throw createHttpError(404, 'Інструмент не знайдено');
+    throw createHttpError(404, "Інструмент не знайдено");
   }
 
   res.status(200).json(tool);
@@ -56,7 +56,7 @@ export const deleteTool = async (req, res) => {
   });
 
   if (!tool) {
-    throw createHttpError(404, 'Інструмент не знайдено');
+    throw createHttpError(404, "Інструмент не знайдено");
   }
 
   res.status(200).json(tool);
@@ -65,22 +65,20 @@ export const deleteTool = async (req, res) => {
 export const updateTool = async (req, res) => {
   const { toolId } = req.params;
 
-    if (req.body.specifications) {
+  if (req.body.specifications) {
     try {
       req.body.specifications = JSON.parse(req.body.specifications);
     } catch {
-      throw createHttpError(400, 'Не вірний формат характеристик');
+      throw createHttpError(400, "Не вірний формат характеристик");
     }
   }
-  
+
   const updateData = { ...req.body };
 
   if (req.file) {
     const result = await saveFileToCloudinary(req.file.buffer);
     updateData.images = result.secure_url;
   }
-
-
 
   const updatedTool = await Tool.findOneAndUpdate(
     {
@@ -96,7 +94,7 @@ export const updateTool = async (req, res) => {
   if (!updatedTool) {
     throw createHttpError(
       404,
-      'Інструмент не знайдено або у вас немає достатніх прав доступу',
+      "Інструмент не знайдено або у вас немає достатніх прав доступу",
     );
   }
 
@@ -112,7 +110,7 @@ export const createTool = async (req, res, next) => {
     try {
       req.body.specifications = JSON.parse(req.body.specifications);
     } catch {
-      throw createHttpError(400, 'Не вірний формат характеристик');
+      throw createHttpError(400, "Не вірний формат характеристик");
     }
   }
 

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
@@ -6,13 +6,13 @@ const bookingSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
       index: true,
     },
     toolId: {
       type: Schema.Types.ObjectId,
-      ref: 'Tool',
+      ref: "Tool",
       required: true,
       index: true,
     },
@@ -56,8 +56,8 @@ const bookingSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed'],
-      default: 'pending',
+      enum: ["pending", "confirmed"],
+      default: "pending",
     },
   },
   {
@@ -67,4 +67,4 @@ const bookingSchema = new Schema(
 
 bookingSchema.index({ toolId: 1, startDate: 1, endDate: 1 });
 
-export const Booking = model('Booking', bookingSchema);
+export const Booking = model("Booking", bookingSchema);

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -20,7 +20,7 @@ const userSchema = new Schema(
     },
     avatarUrl: {
       type: String,
-      default: 'https://ac.goit.global/fullstack/react/default-avatar.jpg',
+      default: "https://ac.goit.global/fullstack/react/default-avatar.jpg",
     },
   },
   {
@@ -35,4 +35,4 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-export const User = model('User', userSchema);
+export const User = model("User", userSchema);

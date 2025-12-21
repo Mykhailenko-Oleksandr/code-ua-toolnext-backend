@@ -1,7 +1,7 @@
-import { HttpError } from 'http-errors';
+import { HttpError } from "http-errors";
 
 export const errorHandler = (err, req, res, next) => {
-  console.log('err', err);
+  console.log("err", err);
 
   if (err instanceof HttpError) {
     return res.status(err.status).json({
@@ -9,11 +9,11 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
 
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd = process.env.NODE_ENV === "production";
 
   res.status(500).json({
     message: isProd
-      ? 'Щось пішло не так. Будь ласка, спробуйте пізніше.'
+      ? "Щось пішло не так. Будь ласка, спробуйте пізніше."
       : err.message,
   });
 };
