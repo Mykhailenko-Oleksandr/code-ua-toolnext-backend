@@ -116,10 +116,9 @@ const options = {
             bookedDates: {
               type: 'array',
               items: {
-                type: 'string',
-                format: 'date',
+                $ref: '#/components/schemas/BookedPeriod',
               },
-              description: 'Booked dates',
+              description: 'Booked periods',
             },
             feedbacks: {
               type: 'array',
@@ -216,6 +215,48 @@ const options = {
             },
           },
         },
+        CreateToolRequest: {
+          type: 'object',
+          required: ['name', 'pricePerDay', 'category', 'rentalTerms', 'description'],
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 3,
+              maxLength: 96,
+              example: 'Drill Machine',
+            },
+            pricePerDay: {
+              type: 'number',
+              minimum: 0,
+              example: 50.0,
+            },
+            category: {
+              type: 'string',
+              example: '507f1f77bcf86cd799439011',
+            },
+            description: {
+              type: 'string',
+              minLength: 20,
+              maxLength: 2000,
+              example: 'Professional drill machine for construction work',
+            },
+            rentalTerms: {
+              type: 'string',
+              minLength: 20,
+              maxLength: 1000,
+              example: 'Minimum rental period: 1 day. Deposit required.',
+            },
+            specifications: {
+              type: 'object',
+              example: { power: '1200W', weight: '2.5kg' },
+            },
+            image: {
+              type: 'string',
+              format: 'binary',
+              description: 'Tool image file',
+            },
+          },
+        },
         UpdateToolRequest: {
           type: 'object',
           properties: {
@@ -230,7 +271,7 @@ const options = {
               minimum: 0,
               example: 75.0,
             },
-            categoryId: {
+            category: {
               type: 'string',
               example: '507f1f77bcf86cd799439011',
             },
@@ -247,14 +288,107 @@ const options = {
               example: 'Updated rental terms and conditions',
             },
             specifications: {
-              type: 'string',
-              maxLength: 1000,
-              example: 'Updated specifications',
+              type: 'object',
+              example: { power: '1500W', weight: '3kg' },
             },
-            images: {
+            image: {
               type: 'string',
-              format: 'uri',
-              example: 'https://example.com/new-image.jpg',
+              format: 'binary',
+              description: 'Tool image file',
+            },
+          },
+        },
+        Category: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: 'Category ID',
+              example: '507f1f77bcf86cd799439011',
+            },
+            title: {
+              type: 'string',
+              description: 'Category title',
+              example: 'Power Tools',
+            },
+            description: {
+              type: 'string',
+              description: 'Category description',
+              example: 'Various power tools for construction',
+            },
+            keywords: {
+              type: 'string',
+              description: 'Category keywords',
+              example: 'drill, saw, hammer',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Category creation date',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Category last update date',
+            },
+          },
+        },
+        BookedPeriod: {
+          type: 'object',
+          properties: {
+            startDate: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-15',
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-20',
+            },
+          },
+        },
+        BookingRequest: {
+          type: 'object',
+          required: [
+            'firstName',
+            'lastName',
+            'phone',
+            'startDate',
+            'endDate',
+            'deliveryCity',
+            'deliveryBranch',
+          ],
+          properties: {
+            firstName: {
+              type: 'string',
+              example: 'John',
+            },
+            lastName: {
+              type: 'string',
+              example: 'Doe',
+            },
+            phone: {
+              type: 'string',
+              example: '+380501234567',
+            },
+            startDate: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-15',
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-20',
+            },
+            deliveryCity: {
+              type: 'string',
+              example: 'Kyiv',
+            },
+            deliveryBranch: {
+              type: 'string',
+              example: 'Branch 1',
             },
           },
         },
@@ -432,6 +566,85 @@ const options = {
           responses: {
             204: {
               description: 'User successfully logged out',
+            },
+          },
+        },
+      },
+      '/api/auth/refresh': {
+        post: {
+          tags: ['Auth'],
+          summary: 'Refresh user session',
+          description: 'Refreshes user session and returns new session cookies',
+          responses: {
+            200: {
+              description: 'Session successfully refreshed',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Session refreshed',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Session not found or expired',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/users/me': {
+        get: {
+          tags: ['Users'],
+          summary: 'Get current user',
+          description: 'Returns current authenticated user information',
+          security: [
+            {
+              cookieAuth: [],
+            },
+          ],
+          responses: {
+            200: {
+              description: 'User found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/User',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'User not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
             },
           },
         },
@@ -657,6 +870,159 @@ const options = {
           },
         },
       },
+      '/api/tools': {
+        get: {
+          tags: ['Tools'],
+          summary: 'Get all tools',
+          description: 'Returns paginated list of tools with optional filtering',
+          parameters: [
+            {
+              name: 'page',
+              in: 'query',
+              required: false,
+              description: 'Page number',
+              schema: {
+                type: 'number',
+                minimum: 1,
+                default: 1,
+                example: 1,
+              },
+            },
+            {
+              name: 'perPage',
+              in: 'query',
+              required: false,
+              description: 'Items per page',
+              schema: {
+                type: 'number',
+                minimum: 5,
+                maximum: 20,
+                default: 8,
+                example: 8,
+              },
+            },
+            {
+              name: 'category',
+              in: 'query',
+              required: false,
+              description: 'Category ID(s) - comma separated',
+              schema: {
+                type: 'string',
+                example: '507f1f77bcf86cd799439011',
+              },
+            },
+            {
+              name: 'search',
+              in: 'query',
+              required: false,
+              description: 'Search query',
+              schema: {
+                type: 'string',
+                example: 'drill',
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Tools found',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      page: {
+                        type: 'number',
+                        example: 1,
+                      },
+                      perPage: {
+                        type: 'number',
+                        example: 8,
+                      },
+                      totalTools: {
+                        type: 'number',
+                        example: 40,
+                      },
+                      totalPages: {
+                        type: 'number',
+                        example: 5,
+                      },
+                      tools: {
+                        type: 'array',
+                        items: {
+                          $ref: '#/components/schemas/Tool',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ['Tools'],
+          summary: 'Create tool',
+          description:
+            'Creates a new tool. Requires authentication. Image is required.',
+          security: [
+            {
+              cookieAuth: [],
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  $ref: '#/components/schemas/CreateToolRequest',
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Tool successfully created',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Tool',
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error or image required',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       '/api/tools/{toolId}': {
         get: {
           tags: ['Tools'],
@@ -745,16 +1111,7 @@ const options = {
               content: {
                 'application/json': {
                   schema: {
-                    type: 'object',
-                    properties: {
-                      message: {
-                        type: 'string',
-                        example: 'Інструмент успішно оновлено.',
-                      },
-                      tool: {
-                        $ref: '#/components/schemas/Tool',
-                      },
-                    },
+                    $ref: '#/components/schemas/Tool',
                   },
                 },
               },
@@ -849,6 +1206,277 @@ const options = {
                 'application/json': {
                   schema: {
                     $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/tools/{toolId}/availability': {
+        get: {
+          tags: ['Tools'],
+          summary: 'Check tool availability',
+          description: 'Returns booked periods for a tool',
+          parameters: [
+            {
+              name: 'toolId',
+              in: 'path',
+              required: true,
+              description: 'Tool ID',
+              schema: {
+                type: 'string',
+                example: '507f1f77bcf86cd799439011',
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Availability information',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      bookedPeriods: {
+                        type: 'array',
+                        items: {
+                          $ref: '#/components/schemas/BookedPeriod',
+                        },
+                        example: [
+                          {
+                            startDate: '2024-01-15',
+                            endDate: '2024-01-20',
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Tool not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Invalid tool ID format',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/bookings/{toolId}': {
+        post: {
+          tags: ['Bookings'],
+          summary: 'Create booking',
+          description:
+            'Creates a new booking for a tool. Requires authentication.',
+          security: [
+            {
+              cookieAuth: [],
+            },
+          ],
+          parameters: [
+            {
+              name: 'toolId',
+              in: 'path',
+              required: true,
+              description: 'Tool ID',
+              schema: {
+                type: 'string',
+                example: '507f1f77bcf86cd799439011',
+              },
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/BookingRequest',
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Booking successfully created',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Successful booking',
+                      },
+                      booked: {
+                        type: 'object',
+                        properties: {
+                          id: {
+                            type: 'string',
+                            example: '507f1f77bcf86cd799439011',
+                          },
+                          userId: {
+                            type: 'string',
+                            example: '507f1f77bcf86cd799439011',
+                          },
+                          tool: {
+                            type: 'object',
+                            properties: {
+                              id: {
+                                type: 'string',
+                                example: '507f1f77bcf86cd799439011',
+                              },
+                              name: {
+                                type: 'string',
+                                example: 'Drill Machine',
+                              },
+                              pricePerDay: {
+                                type: 'number',
+                                example: 50.0,
+                              },
+                            },
+                          },
+                          customerInfo: {
+                            type: 'object',
+                            properties: {
+                              firstName: {
+                                type: 'string',
+                                example: 'John',
+                              },
+                              lastName: {
+                                type: 'string',
+                                example: 'Doe',
+                              },
+                              phone: {
+                                type: 'string',
+                                example: '+380501234567',
+                              },
+                            },
+                          },
+                          rentalPeriod: {
+                            type: 'object',
+                            properties: {
+                              startDate: {
+                                type: 'string',
+                                format: 'date',
+                                example: '2024-01-15',
+                              },
+                              endDate: {
+                                type: 'string',
+                                format: 'date',
+                                example: '2024-01-20',
+                              },
+                              days: {
+                                type: 'number',
+                                example: 6,
+                              },
+                            },
+                          },
+                          delivery: {
+                            type: 'object',
+                            properties: {
+                              city: {
+                                type: 'string',
+                                example: 'Kyiv',
+                              },
+                              branch: {
+                                type: 'string',
+                                example: 'Branch 1',
+                              },
+                            },
+                          },
+                          totalPrice: {
+                            type: 'number',
+                            example: 300.0,
+                          },
+                          status: {
+                            type: 'string',
+                            example: 'pending',
+                          },
+                          createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error or invalid dates',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Tool not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            409: {
+              description: 'Tool is not available for selected dates',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/categories': {
+        get: {
+          tags: ['Categories'],
+          summary: 'Get all categories',
+          description: 'Returns list of all categories',
+          responses: {
+            200: {
+              description: 'Categories found',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/Category',
+                    },
                   },
                 },
               },
