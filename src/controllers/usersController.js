@@ -26,7 +26,6 @@ export const getUserTools = async (req, res) => {
   }
 
   const tools = await Tool.find({ owner: userId })
-    .select("name pricePerDay images rating specifications")
     .skip(skip)
     .limit(perPage)
     .sort({ createdAt: -1 });
