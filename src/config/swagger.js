@@ -253,8 +253,9 @@ const options = {
               example: "Minimum rental period: 1 day. Deposit required.",
             },
             specifications: {
-              type: "object",
-              example: { power: "1200W", weight: "2.5kg" },
+              type: 'string',
+              description: 'Tool specifications as JSON string (e.g., \'{"power":"1200W","weight":"2.5kg"}\')',
+              example: '{"power":"1200W","weight":"2.5kg"}',
             },
             image: {
               type: "string",
@@ -294,8 +295,9 @@ const options = {
               example: "Updated rental terms and conditions",
             },
             specifications: {
-              type: "object",
-              example: { power: "1500W", weight: "3kg" },
+              type: 'string',
+              description: 'Tool specifications as JSON string (e.g., \'{"power":"1500W","weight":"3kg"}\')',
+              example: '{"power":"1500W","weight":"3kg"}',
             },
             image: {
               type: "string",
@@ -756,7 +758,9 @@ const options = {
               required: false,
               description: "Items per page",
               schema: {
-                type: "number",
+                type: 'number',
+                minimum: 5,
+                maximum: 20,
                 default: 8,
                 example: 8,
               },
