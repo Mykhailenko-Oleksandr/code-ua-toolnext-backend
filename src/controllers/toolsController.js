@@ -39,7 +39,7 @@ export const getToolById = async (req, res) => {
 
   const tool = await Tool.findById(toolId).populate({
     path: "owner",
-    select: "name avatarUrl email",
+    select: "_id name avatarUrl email",
   });
   if (!tool) {
     throw createHttpError(404, "Інструмент не знайдено");
