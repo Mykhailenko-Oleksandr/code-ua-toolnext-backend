@@ -106,5 +106,8 @@ export const getToolSchema = {
     search: Joi.string().trim().allow('').messages({
       'string.base': 'Пошуковий запит має бути рядком',
     }),
+    sortBy: Joi.string().valid('rating', 'createdAt', 'pricePerDay').messages({
+      'any.only': 'Сортування може бути тільки за rating, createdAt або pricePerDay',
+    }),
   }),
 };

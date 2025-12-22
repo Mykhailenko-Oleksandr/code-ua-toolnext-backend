@@ -3,7 +3,7 @@ import createHttpError from 'http-errors';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getAllTools = async (req, res) => {
-  const { page = 1, perPage = 8, category, search } = req.query;
+  const { page = 1, perPage = 8, category, search, sortBy } = req.query;
 
   const toolsQuery = Tool.find();
 
@@ -18,9 +18,18 @@ export const getAllTools = async (req, res) => {
     toolsQuery.where('category').in(categories);
   }
 
+  let sortOptions = {};
+  if (sortBy === 'rating') {
+    sortOptions = { rating: -1 };
+  } else if (sortBy === 'createdAt') {
+    sortOptions = { createdAt: -1 };
+  } else if (sortBy === 'pricePerDay') {
+    sortOptions = { pricePerDay: 1 };
+  }
+
   const [totalTools, tools] = await Promise.all([
     toolsQuery.clone().countDocuments(),
-    toolsQuery.skip(skip).limit(perPage),
+    toolsQuery.sort(sortOptions).skip(skip).limit(perPage),
   ]);
 
   const totalPages = Math.ceil(totalTools / perPage);
