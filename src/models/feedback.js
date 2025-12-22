@@ -1,6 +1,16 @@
 import { Schema, model } from "mongoose";
 const feedbackSchema = new Schema(
   {
+    toolId: {
+      type: Schema.Types.ObjectId,
+      ref: "Tool",
+      required: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
