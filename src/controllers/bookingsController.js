@@ -1,6 +1,7 @@
-import createHttpError from 'http-errors';
-import { Booking } from '../models/booking.js';
-import { Tool } from '../models/tool.js';
+import createHttpError from "http-errors";
+import { Booking } from "../models/booking.js";
+import { Tool } from "../models/tool.js";
+import dayjs from "dayjs";
 
 const datesOverlap = (start1, end1, start2, end2) => {
   return start1 <= end2 && start2 <= end1;
@@ -19,7 +20,7 @@ export const checkAvailability = async (req, res) => {
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    throw createHttpError(404, 'Інструмент не знайдено');
+    throw createHttpError(404, "Інструмент не знайдено");
   }
 
   return res.status(200).json({
@@ -43,7 +44,7 @@ export const createBooking = async (req, res) => {
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    throw createHttpError(404, 'Інструмент не знайдено');
+    throw createHttpError(404, "Інструмент не знайдено");
   }
 
   const requestedStart = new Date(startDate);
@@ -61,7 +62,7 @@ export const createBooking = async (req, res) => {
   if (hasOverlap) {
     throw createHttpError(
       409,
-      'Інструмент більше не доступний для обраних дат',
+      "Інструмент більше не доступний для обраних дат",
     );
   }
 
@@ -69,7 +70,7 @@ export const createBooking = async (req, res) => {
   const totalPrice = days * tool.pricePerDay;
 
   if (isNaN(totalPrice) || !isFinite(totalPrice) || totalPrice < 0) {
-    throw createHttpError(400, 'Невірний розрахунок загальної ціни');
+    throw createHttpError(400, "Невірний розрахунок загальної ціни");
   }
 
   const booking = new Booking({
@@ -78,26 +79,26 @@ export const createBooking = async (req, res) => {
     firstName,
     lastName,
     phone,
-    startDate: requestedStart,
-    endDate: requestedEnd,
+    startDate: dayjs(requestedStart).format("YYYY-MM-DD"),
+    endDate: dayjs(requestedEnd).format("YYYY-MM-DD"),
     deliveryCity,
     deliveryBranch,
     totalPrice,
-    status: 'pending',
+    status: "pending",
   });
 
   await booking.save();
 
   tool.bookedDates.push({
-    startDate: requestedStart,
-    endDate: requestedEnd,
+    startDate: dayjs(requestedStart).format("YYYY-MM-DD"),
+    endDate: dayjs(requestedEnd).format("YYYY-MM-DD"),
   });
   await tool.save();
 
-  await booking.populate('toolId', 'name pricePerDay');
+  await booking.populate("toolId", "name pricePerDay");
 
   return res.status(201).json({
-    message: 'Бронювання успішно створено',
+    message: "Бронювання успішно створено",
     booked: {
       id: booking._id,
       userId: booking.userId,

@@ -1,4 +1,4 @@
-import { Feedback } from '../models/feedback.js';
+import { Feedback } from "../models/feedback.js";
 
 export const getFeedbacks = async (req, res) => {
   const { page = 1, perPage = 15 } = req.query;

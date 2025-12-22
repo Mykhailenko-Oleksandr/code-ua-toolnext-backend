@@ -1,15 +1,15 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
 const toolSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: 'Category',
+      ref: "Category",
       required: true,
     },
     name: {
@@ -46,7 +46,7 @@ const toolSchema = new Schema(
       },
     ],
     feedbacks: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
+      type: [{ type: Schema.Types.ObjectId, ref: "Feedback" }],
     },
   },
   {
@@ -56,11 +56,11 @@ const toolSchema = new Schema(
 );
 
 toolSchema.index(
-  { name: 'text', description: 'text' },
+  { name: "text", description: "text" },
   {
-    name: 'ToolTextIndex',
+    name: "ToolTextIndex",
     weights: { name: 10, description: 5 },
   },
 );
 
-export const Tool = model('Tool', toolSchema);
+export const Tool = model("Tool", toolSchema);

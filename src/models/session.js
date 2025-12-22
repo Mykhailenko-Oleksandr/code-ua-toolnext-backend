@@ -1,5 +1,5 @@
-import { model, Schema } from 'mongoose';
-import { User } from './user.js';
+import { model, Schema } from "mongoose";
+import { User } from "./user.js";
 
 const sessionSchema = new Schema(
   {
@@ -31,4 +31,4 @@ const sessionSchema = new Schema(
   },
 );
 
-export const Session = model('Session', sessionSchema);
+export const Session = model("Session", sessionSchema);
