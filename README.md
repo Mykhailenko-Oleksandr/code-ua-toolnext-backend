@@ -1,135 +1,147 @@
-## 📄 README.md
+# 🧰 ToolNext Backend
 
-# Project - ToolNext (Backend side)
+## 🔍 About the Project
 
-Backend part of the final team project **ToolNext** (React + Node.js).
-Frontend repository: `tool-next-frontend` (will be connected via API).
+**ToolNext** is a full-stack application for renting and publishing tools. This backend provides a RESTful API for authentication, user profiles, tool listings, bookings, categories, and feedback. It was developed as part of a team project during the final stage of a React + Node.js course.
 
----
+The backend is built with **Node.js**, uses **MongoDB** for data storage, and includes **JWT-based authentication**, **file uploads**, and **Swagger API documentation**.
 
-## 🚀 Project Goals
+## 🚀 Technologies Used
 
-- Build the final project within the given deadline (React + Node.js).
-- Gain practical experience in teamwork, Git workflow, and task planning.
-- Learn branching, merging, and conflict resolution.
-- Work with Trello for task management.
-- Prepare for team roles (Team Lead, Scrum Master).
-- Present the project as a team.
-- Deliver full functionality according to the technical requirements.
+- 🟩 **Node.js + Express**
+- 🍃 **MongoDB + Mongoose**
+- 🔐 **JWT** – authentication
+- 🧪 **Joi** – data validation
+- 📦 **Multer** – file uploads
+- 🧰 **Swagger** – API documentation
+- 🛡️ **CORS, dotenv, helmet, morgan**
 
----
+## ⚙️ Getting Started
 
-## 📌 Getting Started
+1. 📥 Clone the repository:
 
-### 1. Team Lead
+   ```bash
+   git clone https://github.com/your-team/toolnext-backend.git
+   cd toolnext-backend
+   ```
 
-- Create the repository `tool-next-backend`.
-- Invite all team members as collaborators.
-- Create main branches: `main`, `dev`.
+2. 📦 Install dependencies:
 
-### 2. Team Members
+   ```bash
+   npm install
+   ```
 
-- Clone the repository:
-  ```bash
-  git clone <repo-url>
-  cd tool-next-backend
-  ```
+3. 🛠️ Create a `.env` file based on `.env.template`:
 
-````
-- Install dependencies:
-  ```bash
-  npm install
-  ```
-- Create a new branch for your task:
-  ```bash
-  git switch -c task-<number>
-  ```
-  Example:
-  ```bash
-  git switch -c task-5
-  ```
-### 3. Development Workflow
-- Work only in your task branch.
-- Commit changes with clear messages in English:
-  ```bash
-  git commit -m "feat: implement user model"
-  ```
-- Push your branch:
-  ```bash
-  git push origin task-<number>
-  ```
-- Open a Pull Request to `dev` branch.
-- Team Lead reviews and merges PRs.
----
-## 📂 Project Structure
+   ```env
+   PORT=5000
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   CLIENT_URL=http://localhost:3000
+   ```
+
+4. ▶️ Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 📚 API Documentation
+
+Interactive Swagger documentation is available at:
+
 ```
-TOOL-NEXT-BACKEND/
-├── node_modules/                 # Installed dependencies (not committed)
-├── src/
-│   ├── constants/
-│   │   └── time.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── bookingsController.js
-│   │   ├── categoriesController.js
-│   │   ├── feedbacksController.js
-│   │   ├── toolsController.js
-│   │   └── usersController.js
-│   ├── db/
-│   │   └── connectMongoDB.js
-│   ├── middleware/
-│   │   ├── authenticate.js
-│   │   ├── errorHandler.js
-│   │   ├── logger.js
-│   │   ├── multer.js
-│   │   └── notFoundHandler.js
-│   ├── models/
-│   │   ├── session.js
-│   │   ├── tool.js
-│   │   └── user.js
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── bookingsRoutes.js
-│   │   ├── categoriesRoutes.js
-│   │   ├── feedbacksRoutes.js
-│   │   ├── toolsRoutes.js
-│   │   └── usersRoutes.js
-│   ├── services/
-│   │   ├── auth.js
-│   │   └── cloudinary.js
-│   ├── utils/
-│   │   └── saveFileToCloudinary.js
-│   ├── validations/
-│   │   ├── authValidation.js
-│   │   ├── bookingsValidation.js
-│   │   ├── feedbacksValidation.js
-│   │   ├── toolsValidation.js
-│   │   └── usersValidation.js
-│   └── server.js                 # Entry point of the backend app
-├── .editorconfig
-├── .env
-├── .env.example
-├── .gitignore
-├── .prettierrc
-├── eslint.config.js
-├── package-lock.json
-├── package.json
-├── pullrequest-list.txt
-└── README.md
+http://localhost:5000/api-docs
 ```
----
-## 🛠 Technical Requirements
-- Node.js + Express for backend.
-- MongoDB + Mongoose for database.
-- JWT or session-based authentication.
-- Swagger for API documentation.
-- Environment variables stored in `.env` (with `.env.example` template).
-- Code style enforced with ESLint + Prettier.
-- Deployment on Render or similar service.
----
-## 📎 For submission
-- Links to your Pull Requests.
-- Link to Swagger documentation.
-- Link to GitHub Pages (frontend).
+
+Or view the deployed version here:
+🌐 [Swagger UI – ToolNext API](https://your-deployed-backend.com/api-docs)
+
+## 🧾 Main Endpoints
+
+### 🔐 Auth – `/api/auth`
+
+- `POST /register` – Register a new user
+- `POST /login` – Log in
+- `POST /logout` – Log out (private)
+
+### 👤 Users – `/api/users`
+
+- `GET /me` – Get current user info (private)
+- `GET /:userId` – Get public user profile
+- `GET /:userId/tools` – Get tools by user
+
+### 🛠️ Tools – `/api/tools`
+
+- `POST /` – Create a tool (private)
+- `GET /` – Get all tools (pagination, filtering, search)
+- `GET /:toolId` – Get tool details
+- `PATCH /:toolId` – Edit tool (owner only)
+- `DELETE /:toolId` – Delete tool (owner only)
+
+### 📅 Bookings – `/api/bookings`
+
+- `POST /` – Create a booking (private)
+
+### 🗂️ Categories – `/api/categories`
+
+- `GET /` – Get all categories
+
+### ⭐ Feedbacks – `/api/feedbacks`
+
+- `GET /` – Get feedback list (with pagination)
+- `POST /` – Submit feedback (private, optional)
+
+## ✅ Validation Rules
+
+### 🔐 Registration
+
+- `name`: string, 2–32 chars
+- `email`: valid email, max 64, unique
+- `password`: string, 8–128 chars
+
+### 🛠️ Tool Form
+
+- `name`: string, 3–96 chars
+- `pricePerDay`: number ≥ 0
+- `categoryId`: valid ID
+- `description`: 20–2000 chars
+- `terms`: 20–1000 chars
+- `specifications`: optional, max 1000 chars
+- `images`: jpg/png, max 1MB
+
+### 📅 Booking Form
+
+- `toolId`: valid ID
+- `firstName`, `lastName`: 2–50 chars
+- `phone`: valid format
+- `startDate`, `endDate`: format `YYYY-MM-DD`
+- `deliveryCity`: 2–100 chars
+- `deliveryBranch`: 1–200 chars
+
+## 🌐 Deployment
+
+The backend is deployed on [Render](https://render.com) or similar hosting.
+Swagger is publicly accessible at:
+🔗 [https://your-deployed-backend.com/api-docs](https://your-deployed-backend.com/api-docs)
+
+## 👥 ToolNext Team
+
+- 👑 **Oleksandr Mykhailenko** – TL-developer
+- 🧭 **Mykhailo Kit** – SM-1 developer
+- 🧭 **Alla Yevlampieva** – SM-2 developer
+- 👨‍💻 **Oleh Butenko** – developer
+- 👩‍💻 **Liubov Yurinets** – developer
+- 👨‍💻 **Valerii Zalevskyi** – developer
+- 👩‍💻 **Tetiana Haidar** – developer
+- 👨‍💻 **Vadym Linov** – developer
+- 👩‍💻 **Kateryna Balashova** – developer
+- 👨‍💻 **Borys Savenok** – developer
+- 👨‍💻 **Serhii Komarov** – developer
+- 👨‍💻 **Andrii Bondarenko** – developer
+- 👨‍💻 **Andrii Zinchenko** – developer
+- 👨‍💻 **Oleksandr Shpylovyi** – developer
+- 👨‍💻 **Andrii Krisenko** – developer
+
 ```
-````
+
+```
