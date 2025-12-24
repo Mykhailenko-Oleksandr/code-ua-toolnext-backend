@@ -3,7 +3,14 @@ import createHttpError from "http-errors";
 import { saveFileToCloudinary } from "../utils/saveFileToCloudinary.js";
 
 export const getAllTools = async (req, res) => {
-  const { page = 1, perPage = 8, category, search } = req.query;
+  const {
+    page = 1,
+    perPage = 8,
+    category,
+    search,
+    sortBy = "_id",
+    sortOrder = "asc",
+  } = req.query;
 
   const toolsQuery = Tool.find();
 
@@ -20,7 +27,10 @@ export const getAllTools = async (req, res) => {
 
   const [totalTools, tools] = await Promise.all([
     toolsQuery.clone().countDocuments(),
-    toolsQuery.skip(skip).limit(perPage),
+    toolsQuery
+      .skip(skip)
+      .limit(perPage)
+      .sort({ [sortBy]: sortOrder }),
   ]);
 
   const totalPages = Math.ceil(totalTools / perPage);
