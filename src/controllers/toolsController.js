@@ -20,7 +20,14 @@ export const getAllTools = async (req, res) => {
 
   const [totalTools, tools] = await Promise.all([
     toolsQuery.clone().countDocuments(),
-    toolsQuery.skip(skip).limit(perPage),
+    toolsQuery
+      .skip(skip)
+      .limit(perPage)
+      .populate({
+        path: "feedbacks",
+        select: "name description rate createdAt",
+        options: { sort: { createdAt: -1 } },
+      }),
   ]);
 
   const totalPages = Math.ceil(totalTools / perPage);
@@ -37,10 +44,17 @@ export const getAllTools = async (req, res) => {
 export const getToolById = async (req, res) => {
   const { toolId } = req.params;
 
-  const tool = await Tool.findById(toolId).populate({
-    path: "owner",
-    select: "_id name avatarUrl email",
-  });
+  const tool = await Tool.findById(toolId)
+    .populate({
+      path: "owner",
+      select: "_id name avatarUrl email",
+    })
+    .populate({
+      path: "feedbacks",
+      select: "name description rate createdAt",
+      options: { sort: { createdAt: -1 } },
+    });
+
   if (!tool) {
     throw createHttpError(404, "Інструмент не знайдено");
   }
@@ -86,9 +100,7 @@ export const updateTool = async (req, res) => {
       owner: req.user._id,
     },
     updateData,
-    {
-      new: true,
-    },
+    { new: true },
   );
 
   if (!updatedTool) {
@@ -101,7 +113,7 @@ export const updateTool = async (req, res) => {
   res.status(200).json(updatedTool);
 };
 
-export const createTool = async (req, res, next) => {
+export const createTool = async (req, res) => {
   if (!req.file) {
     throw createHttpError(400, "Зображення є обов'язковим");
   }

@@ -9,6 +9,7 @@ import {
   getFeedbacks,
   getToolFeedbacks,
 } from "../controllers/feedbacksControllers.js";
+import { authenticate } from "../middleware/authenticate.js";
 const router = Router();
 
 router.get("/api/feedbacks", celebrate(getFeedbacksSchema), getFeedbacks);
@@ -19,6 +20,11 @@ router.get(
   getToolFeedbacks,
 );
 
-router.post("/api/feedbacks", celebrate(createFeedbackSchema), createFeedback);
+router.post(
+  "/feedbacks",
+  authenticate,
+  celebrate(createFeedbackSchema),
+  createFeedback,
+);
 
 export default router;

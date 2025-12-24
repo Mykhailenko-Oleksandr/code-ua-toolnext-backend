@@ -34,7 +34,11 @@ export const getToolFeedbacks = async (req, res) => {
 
   const skip = (page - 1) * perPage;
 
-  const feedbackQuery = Feedback.find({ toolId }).sort({ createdAt: -1 });
+  const feedbackIds = tool.feedbacks;
+
+  const feedbackQuery = Feedback.find({
+    _id: { $in: feedbackIds },
+  }).sort({ createdAt: -1 });
 
   const [totalItems, feedbacks] = await Promise.all([
     feedbackQuery.clone().countDocuments(),
@@ -55,11 +59,12 @@ export const createFeedback = async (req, res) => {
 
   const tool = await Tool.findById(toolId);
   if (!tool) {
-    return res.status(404).json({ message: "Tool not found" });
+    return res.status(404).json({ message: "Інструмент не знайдено" });
   }
 
   const newFeedback = await Feedback.create({
     toolId,
+    userId: req.user._id,
     name,
     description,
     rate,
@@ -82,7 +87,7 @@ export const createFeedback = async (req, res) => {
   await tool.save();
 
   res.status(201).json({
-    message: "Feedback created successfully",
+    message: "Відгук успішно створено.",
     feedback: newFeedback,
     ratingUpdated: avgRate,
   });
