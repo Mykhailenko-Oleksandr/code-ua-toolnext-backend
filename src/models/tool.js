@@ -55,12 +55,4 @@ const toolSchema = new Schema(
   },
 );
 
-toolSchema.index(
-  { name: "text", description: "text" },
-  {
-    name: "ToolTextIndex",
-    weights: { name: 10, description: 5 },
-  },
-);
-
 export const Tool = model("Tool", toolSchema);
