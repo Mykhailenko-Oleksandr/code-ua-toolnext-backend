@@ -17,7 +17,12 @@ export const getAllTools = async (req, res) => {
   const skip = (page - 1) * perPage;
 
   if (search) {
-    toolsQuery.where({ $text: { $search: search } });
+    toolsQuery.where({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ],
+    });
   }
 
   if (category) {
