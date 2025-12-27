@@ -42,7 +42,8 @@ export const createFeedbackSchema = {
       "number.integer": "Оцінка має бути цілим числом",
       "any.required": requiredField,
     }),
-    toolId: Joi.string().custom(objectIdValidator).messages({
+    toolId: Joi.string().custom(objectIdValidator).required().messages({
+      "any.required": requiredField,
       "any.custom": "Невірний формат ID інструменту",
     }),
   }),
