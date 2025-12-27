@@ -21,7 +21,7 @@ router.get(
 );
 
 router.post(
-  "/feedbacks",
+  "/api/feedbacks",
   authenticate,
   celebrate(createFeedbackSchema),
   createFeedback,
