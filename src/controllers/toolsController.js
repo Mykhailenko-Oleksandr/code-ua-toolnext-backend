@@ -51,11 +51,23 @@ export const getAllTools = async (req, res) => {
 
 export const getToolById = async (req, res) => {
   const { toolId } = req.params;
+  const { populateFeedbacks } = req.query; // Опциональный параметр для populate отзывов
 
-  const tool = await Tool.findById(toolId).populate({
+  let toolQuery = Tool.findById(toolId).populate({
     path: "owner",
     select: "_id name avatarUrl email",
   });
+
+  // Populate отзывов только если явно запрошено через query параметр populateFeedbacks=true
+  // Это позволяет оптимизировать запросы - загружать отзывы только там, где они нужны (например, на странице деталей инструмента)
+  if (populateFeedbacks === "true" || populateFeedbacks === true) {
+    toolQuery = toolQuery.populate({
+      path: "feedbacks",
+    });
+  }
+
+  const tool = await toolQuery;
+
   if (!tool) {
     throw createHttpError(404, "Інструмент не знайдено");
   }

@@ -30,6 +30,7 @@ const toolSchema = new Schema(
     },
     rating: {
       type: Number,
+      default: 0,
     },
     specifications: {
       type: Object,
