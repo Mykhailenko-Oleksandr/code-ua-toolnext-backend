@@ -48,6 +48,18 @@ const options = {
               example:
                 "https://ac.goit.global/fullstack/react/default-avatar.jpg",
             },
+            rating: {
+              type: "number",
+              description:
+                "User rating (computed, e.g. average rating for user's tools)",
+              example: 4.2,
+            },
+            feedbacksCount: {
+              type: "number",
+              description:
+                "Total feedbacks count for user's tools (computed)",
+              example: 12,
+            },
             createdAt: {
               type: "string",
               format: "date-time",
@@ -123,9 +135,13 @@ const options = {
             feedbacks: {
               type: "array",
               items: {
-                type: "string",
+                oneOf: [
+                  { type: "string" },
+                  { $ref: "#/components/schemas/Feedback" },
+                ],
               },
-              description: "Array of feedback IDs",
+              description:
+                "Array of feedback IDs or populated feedback objects (depends on endpoint)",
             },
             createdAt: {
               type: "string",
@@ -173,6 +189,30 @@ const options = {
               type: "string",
               format: "date-time",
               description: "Feedback last update date",
+            },
+          },
+        },
+        CreateFeedbackRequest: {
+          type: "object",
+          required: ["name", "description", "rate", "toolId"],
+          properties: {
+            name: {
+              type: "string",
+              example: "John Doe",
+            },
+            description: {
+              type: "string",
+              example: "Great tool, very satisfied!",
+            },
+            rate: {
+              type: "number",
+              minimum: 1,
+              maximum: 5,
+              example: 5,
+            },
+            toolId: {
+              type: "string",
+              example: "507f1f77bcf86cd799439011",
             },
           },
         },
@@ -680,24 +720,7 @@ const options = {
               content: {
                 "application/json": {
                   schema: {
-                    type: "object",
-                    properties: {
-                      name: {
-                        type: "string",
-                        example: "John Doe",
-                      },
-                      avatar: {
-                        type: "string",
-                        format: "uri",
-                        example:
-                          "https://ac.goit.global/fullstack/react/default-avatar.jpg",
-                      },
-                      email: {
-                        type: "string",
-                        format: "email",
-                        example: "john.doe@example.com",
-                      },
-                    },
+                    $ref: "#/components/schemas/User",
                   },
                 },
               },
@@ -874,6 +897,89 @@ const options = {
                   schema: {
                     $ref: "#/components/schemas/Error",
                   },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/users/{userId}/feedbacks": {
+        get: {
+          tags: ["Users"],
+          summary: "Get feedbacks for user's tools",
+          description:
+            "Returns paginated list of feedbacks left for tools owned by a user",
+          parameters: [
+            {
+              name: "userId",
+              in: "path",
+              required: true,
+              description: "User ID",
+              schema: {
+                type: "string",
+                example: "507f1f77bcf86cd799439011",
+              },
+            },
+            {
+              name: "page",
+              in: "query",
+              required: false,
+              description: "Page number",
+              schema: {
+                type: "number",
+                minimum: 1,
+                default: 1,
+                example: 1,
+              },
+            },
+            {
+              name: "perPage",
+              in: "query",
+              required: false,
+              description: "Items per page",
+              schema: {
+                type: "number",
+                minimum: 5,
+                maximum: 30,
+                default: 15,
+                example: 15,
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Feedbacks found",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      page: { type: "number", example: 1 },
+                      perPage: { type: "number", example: 15 },
+                      totalItems: { type: "number", example: 100 },
+                      totalPages: { type: "number", example: 7 },
+                      feedbacks: {
+                        type: "array",
+                        items: { $ref: "#/components/schemas/Feedback" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: {
+              description: "Invalid user ID format or validation error",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Error" },
+                },
+              },
+            },
+            404: {
+              description: "User not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Error" },
                 },
               },
             },
@@ -1569,6 +1675,59 @@ const options = {
                   schema: {
                     $ref: "#/components/schemas/Error",
                   },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ["Feedbacks"],
+          summary: "Create feedback",
+          description:
+            "Creates a new feedback for a tool. Requires authentication.",
+          security: [
+            {
+              cookieAuth: [],
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/CreateFeedbackRequest" },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: "Feedback successfully created",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Feedback" },
+                },
+              },
+            },
+            400: {
+              description: "Validation error",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Error" },
+                },
+              },
+            },
+            401: {
+              description: "Unauthorized",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Error" },
+                },
+              },
+            },
+            404: {
+              description: "Tool not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Error" },
                 },
               },
             },
