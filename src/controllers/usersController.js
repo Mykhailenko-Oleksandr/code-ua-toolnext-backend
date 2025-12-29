@@ -12,9 +12,6 @@ export const getPublicUserById = async (req, res) => {
     throw createHttpError(404, "Користувача не знайдено");
   }
 
-  // V2807: Рейтинг пользователя считаем на основе рейтингов его инструментов,
-  //        взвешивая по количеству отзывов к каждому инструменту.
-  //        Это эквивалентно среднему по всем отзывам, но без загрузки самих отзывов.
   const toolsAgg = await Tool.aggregate([
     { $match: { owner: new Types.ObjectId(userId) } },
     {
@@ -91,7 +88,6 @@ export const getUserFeedbacks = async (req, res) => {
   const perPageNumber = Number(perPage);
   const skip = (pageNumber - 1) * perPageNumber;
 
-  // V2807: Отдаем отзывы, оставленные к инструментам пользователя (owner=userId).
   const agg = await Tool.aggregate([
     { $match: { owner: new Types.ObjectId(userId) } },
     { $unwind: { path: "$feedbacks" } },
