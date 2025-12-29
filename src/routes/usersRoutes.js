@@ -5,10 +5,12 @@ import {
   getPublicUserById,
   getUserTools,
   getCurrentUser,
+  getUserFeedbacks,
 } from "../controllers/usersController.js";
 import {
   userIdSchema,
   userToolsSchema,
+  userFeedbacksSchema,
 } from "../validations/usersValidation.js";
 
 import { authenticate } from "../middleware/authenticate.js";
@@ -21,6 +23,11 @@ router.get(
   "/api/users/:userId/tools",
   celebrate(userToolsSchema),
   getUserTools,
+);
+router.get(
+  "/api/users/:userId/feedbacks",
+  celebrate(userFeedbacksSchema),
+  getUserFeedbacks,
 );
 
 export default router;
